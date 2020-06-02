@@ -6,8 +6,9 @@ const jwt = require('jsonwebtoken')
 const config = require('config')
 
 const Staff = require('../models/Staff')
+const auth = require('../middleware/auth')
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const staff = await Staff.findById(req.user.id).select('-password')
 

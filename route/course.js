@@ -4,8 +4,9 @@ const { check, validationResult } = require('express-validator')
 
 const Staff = require('../models/Staff')
 const Course = require('../models/Course')
+const auth = require('../middleware/auth')
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const courses = await Course.find()
 
@@ -23,8 +24,11 @@ router.get('/', async (req, res) => {
 router.post(
     '/',
     [
-        check('name', 'Name is required').not().isEmpty(),
-        check('code', 'Code is required').not().isEmpty(),
+        auth,
+        [
+            check('name', 'Name is required').not().isEmpty(),
+            check('code', 'Code is required').not().isEmpty(),
+        ]
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -54,7 +58,7 @@ router.post(
     }
 )
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
     try {
         const course = await Course.findById(req.params.id)
 
@@ -74,8 +78,11 @@ router.get('/:id', async (req, res) => {
 router.put(
     '/:id',
     [
-        check('name', 'Name is required').not().isEmpty(),
-        check('code', 'Code is required').not().isEmpty(),
+        auth,
+        [
+            check('name', 'Name is required').not().isEmpty(),
+            check('code', 'Code is required').not().isEmpty(),
+        ]
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -137,7 +144,7 @@ router.put(
     }
 )
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     try {
         const course = await Course.findById(req.params.id)
 

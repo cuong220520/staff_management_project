@@ -2,11 +2,13 @@ const express = require('express')
 const router = express.Router()
 const { check, validationResult } = require('express-validator')
 const gravatar = require('gravatar')
+const bcrypt = require('bcryptjs')
 
 const Staff = require('../models/Staff')
 const Course = require('../models/Course')
+const auth = require('../middleware/auth')
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try {
         const staffs = await Staff.find()
 
@@ -22,14 +24,17 @@ router.get('/', async (req, res) => {
 })
 
 router.post(
-    '/',
+    '/profile',
     [
-        check('name', 'Name is required').not().isEmpty(),
-        check('email', 'Invalid email').isEmail(),
-        check('password', 'Password must have at least 6 characters'),
-        check('gender', 'Gender is required').not().isEmpty(),
-        check('dateOfBirth', 'Birth date is required').not().isEmpty(),
-        check('position', 'Position is required').not().isEmpty(),
+        auth,
+        [
+            check('name', 'Name is required').not().isEmpty(),
+            check('email', 'Invalid email').isEmail(),
+            check('password', 'Password must have at least 6 characters').isLength({ min: 6 }),
+            check('gender', 'Gender is required').not().isEmpty(),
+            check('dateOfBirth', 'Birth date is required').not().isEmpty(),
+            check('position', 'Position is required').not().isEmpty()
+        ]
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -45,6 +50,7 @@ router.post(
             gender,
             dateOfBirth,
             position,
+            ieltsDegree
         } = req.body
 
         const image = gravatar.url(email, {
@@ -56,13 +62,18 @@ router.post(
         try {
             const staff = new Staff({
                 name: name,
-                email: email,
-                password: password,
+                email,
+                password,
                 gender: gender,
                 dateOfBirth: dateOfBirth,
                 position: position.toLowerCase(),
+                ieltsDegree: ieltsDegree,
                 image: image,
             })
+
+            const salt = await bcrypt.genSalt(10)
+
+            staff.password = await bcrypt.hash(password, salt)
 
             await staff.save()
 
@@ -74,7 +85,7 @@ router.post(
     }
 )
 
-router.get('/:position', async (req, res) => {
+router.get('/:position', auth, async (req, res) => {
     try {
         const staffsByPosition = await Staff.find({
             position: req.params.position,
@@ -93,7 +104,7 @@ router.get('/:position', async (req, res) => {
     }
 })
 
-router.get('/profile/:id', async (req, res) => {
+router.get('/profile/:id', auth, async (req, res) => {
     try {
         const staff = await Staff.findById(req.params.id)
 
@@ -113,10 +124,13 @@ router.get('/profile/:id', async (req, res) => {
 router.put(
     '/profile/:id',
     [
-        check('name', 'Name is required').not().isEmpty(),
-        check('gender', 'Gender is required').not().isEmpty(),
-        check('dateOfBirth', 'Birth date is required').not().isEmpty(),
-        check('position', 'Position is required').not().isEmpty(),
+        auth,
+        [
+            check('name', 'Name is required').not().isEmpty(),
+            check('gender', 'Gender is required').not().isEmpty(),
+            check('dateOfBirth', 'Birth date is required').not().isEmpty(),
+            check('position', 'Position is required').not().isEmpty(),
+        ]
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -125,7 +139,7 @@ router.put(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const { name, gender, dateOfBirth, position, image } = req.body
+        const { name, gender, dateOfBirth, position, image, ieltsDegree } = req.body
 
         const staffProfile = {}
 
@@ -136,6 +150,7 @@ router.put(
             if (gender) staffProfile.gender = gender
             if (dateOfBirth) staffProfile.dateOfBirth = dateOfBirth
             if (position) staffProfile.position = position
+            if (ieltsDegree) staffProfile.ieltsDegree = ieltsDegree
             if (image) {
                 staffProfile.image = image
             } else {
@@ -186,7 +201,7 @@ router.put(
     }
 )
 
-router.delete('/profile/:id', async (req, res) => {
+router.delete('/profile/:id', auth, async (req, res) => {
     try {
         const staff = await Staff.findById(req.params.id)
         staff.courses.map(async (item) => {
@@ -222,7 +237,7 @@ router.delete('/profile/:id', async (req, res) => {
     }
 })
 
-router.put('/profile/:id/course', async (req, res) => {
+router.put('/profile/:id/course', auth, async (req, res) => {
     const { code } = req.body
 
     try {
@@ -273,7 +288,7 @@ router.put('/profile/:id/course', async (req, res) => {
     }
 })
 
-router.delete('/profile/:id/course/:courseId', async (req, res) => {
+router.delete('/profile/:id/course/:courseId', auth, async (req, res) => {
     try {
         const staff = await Staff.findById(req.params.id)
         const course = await Course.findById(req.params.courseId)
@@ -302,6 +317,144 @@ router.delete('/profile/:id/course/:courseId', async (req, res) => {
             console.error(err.message)
             res.status(500).json({ msg: 'Server error' })
         }
+    }
+})
+
+router.put(
+    '/experience',
+    [
+        auth,
+        [
+            check('title', 'Title is required').not().isEmpty(),
+            check('company', 'Company is required').not().isEmpty(),
+            check('from', 'From date is required').not().isEmpty(),
+        ],
+    ],
+    async (req, res) => {
+        const errors = validationResult(req)
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+        const { title, company, location, from, to, description } = req.body
+
+        const newExp = {
+            title,
+            company,
+            location,
+            from,
+            to,
+            description,
+        }
+
+        try {
+            const staff = await Staff.findById(req.staff.id)
+
+            console.log(staff)
+
+            staff.experience.unshift(newExp)
+
+            await staff.save()
+
+            res.json(staff)
+        } catch (err) {
+            console.error(err.message)
+            res.status(500).json({ msg: 'Server error' })
+        }
+    }
+)
+
+router.delete('/experience/:exp_id', auth, async (req, res) => {
+    try {
+        const staff = await Staff.findById(req.user.id)
+
+        // get remove index
+        const removeIndex = staff.experience
+            .map((item) => item.id)
+            .indexOf(req.params.exp_id)
+
+        staff.experience.splice(removeIndex, 1)
+
+        await staff.save()
+
+        res.json(staff)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({ msg: 'Server error' })
+    }
+})
+
+router.put(
+    '/education',
+    [
+        auth,
+        [
+            check('school', 'School is required').not().isEmpty(),
+            check('degree', 'Degree is required').not().isEmpty(),
+            check('fieldOfStudy', 'Field of study is required').not().isEmpty(),
+            check('from', 'From date is required').not().isEmpty(),
+        ],
+    ],
+    async (req, res) => {
+        const errors = validationResult(req)
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+        const {
+            school,
+            degree,
+            fieldOfStudy,
+            from,
+            to,
+            current,
+            description,
+        } = req.body
+
+        const newEdu = {
+            school,
+            degree,
+            fieldOfStudy,
+            from,
+            to,
+            current,
+            description,
+        }
+
+        try {
+            const staff = await Staff.findById(req.user.id)
+
+            staff.education.unshift(newEdu)
+
+            await staff.save()
+
+            res.json(staff)
+        } catch (err) {
+            console.error(err.message)
+            res.status(500).json({ msg: 'Server error' })
+        }
+    }
+)
+
+router.delete('/education/:edu_id', auth, async (req, res) => {
+    try {
+        const staff = await Staff.findById(req.user.id)
+
+        // get remove index
+        const removeIndex = staff.education
+            .map((item) => item.id)
+            .indexOf(req.params.edu_id)
+
+        staff.education.splice(removeIndex, 1)
+
+        await staff.save()
+
+        res.json(staff)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({ msg: 'Server error' })
     }
 })
 
