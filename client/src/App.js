@@ -1,14 +1,38 @@
-import React from 'react';
-import './App.css';
+import React, { useEffect } from 'react'
+import './App.css'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import { Provider } from 'react-redux'
 
-function App() {
-  return (
-    <div className="container">
-        <h1>Welcome to course Upload Image Filepond</h1>
-        <h2>Post your image and scream !!!</h2>
+import NavBar from './components/layout/NavBar'
+import Landing from './components/layout/Landing'
+import { loadUser } from './actions/auth'
+import setAuthToken from './utils/setAuthToken'
+import store from './store'
+import Login from './components/auth/Login'
 
-    </div>
-  );
+if (localStorage.token) {
+    setAuthToken(localStorage.token)
 }
 
-export default App;
+const App = () => {
+    useEffect(() => {
+        store.dispatch(loadUser())
+    }, [])
+
+    return (
+        <Provider store={store}>
+            <Router>
+                <NavBar />
+
+                <Route exact path='/' component={Landing} />
+                <section className='container'>
+                    <Switch>
+                        <Route exact path='/login' component={Login} />
+                    </Switch>
+                </section>
+            </Router>
+        </Provider>
+    )
+}
+
+export default App
