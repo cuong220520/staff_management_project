@@ -12,7 +12,7 @@ const Landing = ({ auth: { loading, position } }) => {
 
     return (
         <div>
-            {loading || position === '' ? (
+            {loading ? (
                 <Spinner />
             ) : (
                 <div>

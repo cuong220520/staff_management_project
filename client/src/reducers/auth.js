@@ -10,7 +10,7 @@ const initialState = {
     token: localStorage.getItem('token'),
     isAuthenticated: null,
     loading: true,
-    position: ''
+    user: {}
 }
 
 export default function(state = initialState, action) {
@@ -22,7 +22,10 @@ export default function(state = initialState, action) {
                 ...state,
                 isAuthenticated: true,
                 loading: false,
-                position: payload.position
+                user: {
+                    name: payload.name,
+                    position: payload.position
+                }
             }
 
         case LOGIN_SUCCESS:
@@ -43,7 +46,7 @@ export default function(state = initialState, action) {
                 token: null,
                 isAuthenticated: false,
                 loading: false,
-                position: ''
+                user: {}
             }
     
         default:

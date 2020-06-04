@@ -9,6 +9,7 @@ import { loadUser } from './actions/auth'
 import setAuthToken from './utils/setAuthToken'
 import store from './store'
 import Login from './components/auth/Login'
+import Alert from './components/layout/Alert'
 
 if (localStorage.token) {
     setAuthToken(localStorage.token)
@@ -24,9 +25,13 @@ const App = () => {
             <Router>
                 <NavBar />
 
-                <Route exact path='/' component={Landing} />
+                <div className='fixed-top alert-position'>
+                    <Alert />
+                </div>
+
                 <section className='container'>
                     <Switch>
+                        <Route exact path='/' component={Landing} />
                         <Route exact path='/login' component={Login} />
                     </Switch>
                 </section>

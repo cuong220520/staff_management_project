@@ -11,3 +11,9 @@ body {
 .card-padding {
     padding:  1rem;
 }
+
+.alert-position {
+    width: 15%;
+    top: 10%;
+    left: 82%;
+}
