@@ -41,6 +41,8 @@ export const login = ({ email, password }) => async (dispatch) => {
         })
 
         dispatch(loadUser())
+
+        dispatch(setAlert('Login successfully', 'success'))
     } catch (err) {
         const errors = err.response.data.errors
 
@@ -62,4 +64,6 @@ export const logout = () => dispatch => {
     dispatch({
         type: LOGOUT
     })
+
+    dispatch(setAlert('Logout successfully', 'success'))
 }

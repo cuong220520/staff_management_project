@@ -16,8 +16,8 @@ const NavBar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
                     </Link>
                 </li>
                 <li className='nav-item'>
-                    <Link className='nav-link' to='pages.html'>
-                        Pages
+                    <Link className='nav-link' to='/staff/profile'>
+                        Create Staff
                     </Link>
                 </li>
                 <li className='nav-item'>

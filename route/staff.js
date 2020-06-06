@@ -10,7 +10,7 @@ const auth = require('../middleware/auth')
 
 router.get('/', auth, async (req, res) => {
     try {
-        const staffs = await Staff.find()
+        const staffs = await Staff.find().select('-password')
 
         if (staffs.length === 0) {
             return res.status(404).json({ msg: 'There is no staff here' })
