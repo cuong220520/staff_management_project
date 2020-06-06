@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
+import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
 import { getStaffs } from '../../actions/staff'
@@ -15,7 +16,7 @@ const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
         <div className='card mt-3'>
             <div className='card-header'>Latest Users</div>
 
-            <div className='card-body'>
+            <div className='card-body card-table'>
                 <table className='table table-striped'>
                     <thead>
                         <tr>
@@ -37,11 +38,20 @@ const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
                                     <td>{staff.gender}</td>
                                     <td>{staff.dateOfBirth}</td>
                                     <td>{staff.position}</td>
-                                    <td></td>
+                                    <td>
+                                        <Link to={`/profile/${staff._id}`}>
+                                            <i className='fas fa-edit'></i>
+                                        </Link>
+                                        <label id='remove-item'>
+                                            <i className='fas fa-times'></i>
+                                        </label>
+                                    </td>
                                 </tr>    
                             )
                         ) : (
-                            <tr>No staffs found</tr>
+                            <tr>
+                                <td colSpan='6'>No profile found</td>
+                            </tr>
                         )}
                     </tbody>
                 </table>

@@ -1,44 +1,69 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-
-import { createStaff } from '../../actions/staff'
 import { connect } from 'react-redux'
 
-const CreateStaff = ({ createStaff, history }) => {
+import { getStaffById, updateStaffById } from '../../actions/staff'
+
+const EditStaff = ({
+    match,
+    staff: { staff, loading },
+    getStaffById,
+    updateStaffById,
+    history
+}) => {
     const [formData, setFormData] = useState({
         name: '',
-        email: '',
-        password: '',
         gender: '',
         dateOfBirth: '',
         ieltsDegree: 0,
         position: '',
     })
 
-    const { name, email, password, gender, dateOfBirth, ieltsDegree, position } = formData
+    const fetchUser = () => {
+        getStaffById(match.params.id)
+    }
+
+    useEffect(() => {
+        fetchUser()
+
+        setFormData({
+            name: loading || !staff.name ? '' : staff.name,
+            gender: loading || !staff.gender ? '' : staff.gender,
+            dateOfBirth: loading || !staff.dateOfBirth ? '' : staff.dateOfBirth,
+            ieltsDegree: loading || !staff.ieltsDegree ? '' : staff.ieltsDegree,
+            position: loading || !staff.position ? '' : staff.position,
+        })
+        // eslint-disable-next-line
+    }, [loading, staff._id])
+
+    const { name, gender, dateOfBirth, ieltsDegree, position } = formData
 
     const onChange = (event) => {
         setFormData({ ...formData, [event.target.name]: event.target.value })
     }
 
-    const onSubmit = event => {
+    const onSubmit = (event) => {
         event.preventDefault()
 
-        createStaff(formData, history)
+        updateStaffById(match.params.id, formData, history)
     }
 
     return (
         <div className='container mt-4'>
             <h1 className='text-center mb-4'>
                 <i className='fas fa-edit'></i>
-                {'  '}Create Staff
+                {'  '}Update Staff Profile
             </h1>
 
             <div className='row'>
                 <div className='col-md-3'></div>
 
                 <div className='col-md-6 col-md-offset-6'>
-                    <form id='login' className='card card-padding' onSubmit={onSubmit}>
+                    <form
+                        id='login'
+                        className='card card-padding'
+                        onSubmit={onSubmit}
+                    >
                         <div className='form-group'>
                             <label>Name</label>
                             <input
@@ -52,39 +77,14 @@ const CreateStaff = ({ createStaff, history }) => {
                         </div>
 
                         <div className='form-group'>
-                            <label>Email Address</label>
-                            <input
-                                type='text'
-                                className='form-control'
-                                name='email'
-                                value={email}
-                                onChange={onChange}
-                                placeholder='Enter Email'
-                            />
-                        </div>
-
-                        <div className='form-group'>
-                            <label>Password</label>
-                            <input
-                                type='password'
-                                className='form-control'
-                                name='password'
-                                value={password}
-                                onChange={onChange}
-                                placeholder='Password'
-                            />
-                        </div>
-
-                        <div className='form-group'>
                             <label>Gender</label>
                             <select
                                 name='gender'
                                 className='form-control'
                                 onChange={onChange}
                                 value={gender}
-                                
                             >
-                                <option value='Male' defaultValue>Male</option>
+                                <option value='Male'>Male</option>
                                 <option value='Female'>Female</option>
                             </select>
                         </div>
@@ -92,8 +92,8 @@ const CreateStaff = ({ createStaff, history }) => {
                         <div className='form-group'>
                             <label>Date Of Birth</label>
                             <input
-                                type='date'
                                 className='form-control'
+                                type='date'
                                 name='dateOfBirth'
                                 value={dateOfBirth}
                                 onChange={onChange}
@@ -120,7 +120,7 @@ const CreateStaff = ({ createStaff, history }) => {
                                 onChange={onChange}
                                 value={position}
                             >
-                                <option value='trainer' defaultValue>Trainer</option>
+                                <option value='trainer'>Trainer</option>
                                 <option value='trainee'>Trainee</option>
                             </select>
                         </div>
@@ -129,7 +129,7 @@ const CreateStaff = ({ createStaff, history }) => {
                             type='submit'
                             className='btn btn-light btn-block'
                         >
-                            Create
+                            Update
                         </button>
                     </form>
                 </div>
@@ -140,8 +140,16 @@ const CreateStaff = ({ createStaff, history }) => {
     )
 }
 
-CreateStaff.propTypes = {
-    createStaff: PropTypes.func.isRequired,
+EditStaff.propTypes = {
+    staff: PropTypes.object.isRequired,
+    getStaffById: PropTypes.func.isRequired,
+    updateStaffById: PropTypes.func.isRequired,
 }
 
-export default connect(null, { createStaff })(CreateStaff)
+const mapStateToProps = (state) => ({
+    staff: state.staff,
+})
+
+export default connect(mapStateToProps, { updateStaffById, getStaffById })(
+    EditStaff
+)

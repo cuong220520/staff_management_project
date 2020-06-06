@@ -30,11 +30,14 @@ router.post(
         [
             check('name', 'Name is required').not().isEmpty(),
             check('email', 'Invalid email').isEmail(),
-            check('password', 'Password must have at least 6 characters').isLength({ min: 6 }),
+            check(
+                'password',
+                'Password must have at least 6 characters'
+            ).isLength({ min: 6 }),
             check('gender', 'Gender is required').not().isEmpty(),
             check('dateOfBirth', 'Birth date is required').not().isEmpty(),
-            check('position', 'Position is required').not().isEmpty()
-        ]
+            check('position', 'Position is required').not().isEmpty(),
+        ],
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -50,7 +53,7 @@ router.post(
             gender,
             dateOfBirth,
             position,
-            ieltsDegree
+            ieltsDegree,
         } = req.body
 
         const image = gravatar.url(email, {
@@ -59,13 +62,17 @@ router.post(
             d: 'mm',
         })
 
+        let date = new Date(dateOfBirth)
+
+        date = date.toISOString().split('T')[0]
+
         try {
             const staff = new Staff({
                 name: name,
                 email,
                 password,
                 gender: gender,
-                dateOfBirth: dateOfBirth,
+                dateOfBirth: date,
                 position: position.toLowerCase(),
                 ieltsDegree: ieltsDegree,
                 image: image,
@@ -106,7 +113,7 @@ router.get('/:position', auth, async (req, res) => {
 
 router.get('/profile/:id', auth, async (req, res) => {
     try {
-        const staff = await Staff.findById(req.params.id)
+        const staff = await Staff.findById(req.params.id).select('-password')
 
         if (staff) {
             res.json(staff)
@@ -130,7 +137,7 @@ router.put(
             check('gender', 'Gender is required').not().isEmpty(),
             check('dateOfBirth', 'Birth date is required').not().isEmpty(),
             check('position', 'Position is required').not().isEmpty(),
-        ]
+        ],
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -139,7 +146,18 @@ router.put(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const { name, gender, dateOfBirth, position, image, ieltsDegree } = req.body
+        const {
+            name,
+            gender,
+            dateOfBirth,
+            position,
+            image,
+            ieltsDegree,
+        } = req.body
+
+        let date = new Date(dateOfBirth)
+
+        date = date.toISOString().split('T')[0]
 
         const staffProfile = {}
 
@@ -148,7 +166,7 @@ router.put(
 
             if (name) staffProfile.name = name
             if (gender) staffProfile.gender = gender
-            if (dateOfBirth) staffProfile.dateOfBirth = dateOfBirth
+            if (date) staffProfile.date = date
             if (position) staffProfile.position = position
             if (ieltsDegree) staffProfile.ieltsDegree = ieltsDegree
             if (image) {

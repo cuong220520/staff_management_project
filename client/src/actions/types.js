@@ -11,3 +11,8 @@ export const LOGOUT = 'LOGOUT'
 
 export const GET_STAFFS = 'GET_STAFFS'
 export const GET_STAFFS_ERROR = 'GET_STAFFS_ERROR'
+
+export const GET_STAFF = 'GET_STAFF'
+
+export const CLEAR_STAFF = 'CLEAR_STAFF'
+export const CLEAR_STAFFS = 'CLEAR_STAFFS'

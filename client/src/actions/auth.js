@@ -1,10 +1,18 @@
 import axios from 'axios'
 
-import { LOGIN_FAIL, LOGIN_SUCCESS, AUTH_ERROR, USER_LOADED, LOGOUT } from './types'
+import {
+    LOGIN_FAIL,
+    LOGIN_SUCCESS,
+    AUTH_ERROR,
+    USER_LOADED,
+    LOGOUT,
+    CLEAR_STAFF,
+    CLEAR_STAFFS,
+} from './types'
 import setAuthToken from '../utils/setAuthToken'
 import { setAlert } from './alert'
 
-export const loadUser = () => async dispatch => {
+export const loadUser = () => async (dispatch) => {
     if (localStorage.token) {
         setAuthToken(localStorage.token)
     }
@@ -14,11 +22,11 @@ export const loadUser = () => async dispatch => {
 
         dispatch({
             type: USER_LOADED,
-            payload: res.data
+            payload: res.data,
         })
     } catch (err) {
         dispatch({
-            type: AUTH_ERROR
+            type: AUTH_ERROR,
         })
     }
 }
@@ -26,8 +34,8 @@ export const loadUser = () => async dispatch => {
 export const login = ({ email, password }) => async (dispatch) => {
     const config = {
         headers: {
-            'Content-Type': 'application/json'
-        }
+            'Content-Type': 'application/json',
+        },
     }
 
     const body = JSON.stringify({ email, password })
@@ -37,7 +45,7 @@ export const login = ({ email, password }) => async (dispatch) => {
 
         dispatch({
             type: LOGIN_SUCCESS,
-            payload:res.data
+            payload: res.data,
         })
 
         dispatch(loadUser())
@@ -47,7 +55,7 @@ export const login = ({ email, password }) => async (dispatch) => {
         const errors = err.response.data.errors
 
         if (errors) {
-            errors.forEach(error => dispatch(setAlert(error.msg, 'danger')))
+            errors.forEach((error) => dispatch(setAlert(error.msg, 'danger')))
         }
 
         const error = err.response.data
@@ -55,14 +63,22 @@ export const login = ({ email, password }) => async (dispatch) => {
         dispatch(setAlert(error.msg, 'danger'))
 
         dispatch({
-            type: LOGIN_FAIL
+            type: LOGIN_FAIL,
         })
     }
 }
 
-export const logout = () => dispatch => {
+export const logout = () => (dispatch) => {
     dispatch({
-        type: LOGOUT
+        type: CLEAR_STAFF,
+    })
+
+    dispatch({
+        type: CLEAR_STAFFS,
+    })
+
+    dispatch({
+        type: LOGOUT,
     })
 
     dispatch(setAlert('Logout successfully', 'success'))

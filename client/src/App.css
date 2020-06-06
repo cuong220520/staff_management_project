@@ -17,3 +17,13 @@ body {
     top: 10%;
     left: 82%;
 }
+
+.card-table {
+    height: 30vh;
+    overflow: auto;
+}
+
+#remove-item {
+    padding-left: 1rem;
+    color: #e74c3c;
+}
