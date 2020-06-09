@@ -9,7 +9,7 @@ const EditStaff = ({
     staff: { staff, loading },
     getStaffById,
     updateStaffById,
-    history
+    history,
 }) => {
     const [formData, setFormData] = useState({
         name: '',
@@ -34,7 +34,7 @@ const EditStaff = ({
             position: loading || !staff.position ? '' : staff.position,
         })
         // eslint-disable-next-line
-    }, [loading, staff._id])
+    }, [loading, staff._id, getStaffById])
 
     const { name, gender, dateOfBirth, ieltsDegree, position } = formData
 
@@ -121,7 +121,7 @@ const EditStaff = ({
                                 value={position}
                             >
                                 <option value='trainer'>Trainer</option>
-                                <option value='trainee'>Trainee</option>
+                                <option value='training-staff'>Training Staff</option>
                             </select>
                         </div>
 

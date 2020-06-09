@@ -1,4 +1,4 @@
-import { GET_STAFFS, GET_STAFFS_ERROR, CLEAR_STAFF, CLEAR_STAFFS, GET_STAFF } from '../actions/types'
+import { GET_STAFFS, GET_STAFFS_ERROR, CLEAR_STAFF, CLEAR_STAFFS, GET_STAFF, GET_STAFFS_POSITION } from '../actions/types'
 
 const initialState = {
     staff: {},
@@ -23,6 +23,14 @@ export default function(state = initialState, action) {
             return {
                 ...state,
                 staffs: payload,
+                loading: false,
+                error: {}
+            }
+
+        case GET_STAFFS_POSITION:
+            return {
+                ...state,
+                staffs: payload.concat(...state.staffs),
                 loading: false,
                 error: {}
             }

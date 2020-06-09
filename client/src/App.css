@@ -19,7 +19,7 @@ body {
 }
 
 .card-table {
-    height: 30vh;
+    height: 50vh;
     overflow: auto;
 }
 
@@ -27,3 +27,8 @@ body {
     padding-left: 1rem;
     color: #e74c3c;
 }
+
+#remove-item:hover {
+    cursor: pointer;
+}
+

@@ -56,6 +56,15 @@ router.post(
             ieltsDegree,
         } = req.body
 
+        let staff = await Staff.findOne({ email })
+
+        // see if user exists
+        if (staff) {
+            return res
+                .status(400)
+                .json({ errors: [{ msg: 'Staff already exists' }] })
+        }
+
         const image = gravatar.url(email, {
             s: '200',
             r: 'pg',
@@ -67,7 +76,7 @@ router.post(
         date = date.toISOString().split('T')[0]
 
         try {
-            const staff = new Staff({
+            staff = new Staff({
                 name: name,
                 email,
                 password,
@@ -475,5 +484,39 @@ router.delete('/education/:edu_id', auth, async (req, res) => {
         res.status(500).json({ msg: 'Server error' })
     }
 })
+
+router.put(
+    '/profile/:id/change-credentials',
+    auth,
+    [
+        check('email', 'Email is required')
+            .not()
+            .isEmpty(),
+        check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req)
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+        
+        let { email, password } = req.body
+        try {
+          let staff = await Staff.findById(req.params.id)
+          
+          const salt = await bcrypt.genSalt(10)
+          password = await bcrypt.hash(password, salt)
+
+          staff = await Staff.findOneAndUpdate({ _id: staff.id }, { email: email }, { password: password })          
+
+          res.json(staff)
+        } catch (err) {
+            console.error(err.message)
+            res.status(500).send('Server error')
+        }
+    }
+)
 
 module.exports = router

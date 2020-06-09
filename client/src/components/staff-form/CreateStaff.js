@@ -9,10 +9,10 @@ const CreateStaff = ({ createStaff, history }) => {
         name: '',
         email: '',
         password: '',
-        gender: '',
+        gender: 'Male',
         dateOfBirth: '',
         ieltsDegree: 0,
-        position: '',
+        position: 'trainer',
     })
 
     const { name, email, password, gender, dateOfBirth, ieltsDegree, position } = formData
@@ -84,7 +84,7 @@ const CreateStaff = ({ createStaff, history }) => {
                                 value={gender}
                                 
                             >
-                                <option value='Male' defaultValue>Male</option>
+                                <option value='Male'>Male</option>
                                 <option value='Female'>Female</option>
                             </select>
                         </div>
@@ -120,8 +120,8 @@ const CreateStaff = ({ createStaff, history }) => {
                                 onChange={onChange}
                                 value={position}
                             >
-                                <option value='trainer' defaultValue>Trainer</option>
-                                <option value='trainee'>Trainee</option>
+                                <option value='trainer'>Trainer</option>
+                                <option value='training-staff'>Training Staff</option>
                             </select>
                         </div>
 

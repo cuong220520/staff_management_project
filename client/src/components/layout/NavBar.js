@@ -11,30 +11,25 @@ const NavBar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
             <ul className='navbar-nav mr-auto'>
                 <li className='nav-item'>
                     <Link className='nav-link' to='/'>
-                        Dashboard
+                        Staff
                         <span className='sr-only'>(current)</span>
                     </Link>
                 </li>
-                <li className='nav-item'>
-                    <Link className='nav-link' to='/staff/profile'>
-                        Create Staff
-                    </Link>
-                </li>
-                <li className='nav-item'>
-                    <Link className='nav-link' to='posts.html'>
-                        Posts
-                    </Link>
-                </li>
-                <li className='nav-item'>
-                    <Link className='nav-link' to='users.html'>
-                        Users
-                    </Link>
-                </li>
+
+                {user.position === 'training-staff' && (
+                    <Fragment>
+                        <li className='nav-item'>
+                            <Link className='nav-link' to='/course'>
+                                Course
+                            </Link>
+                        </li>
+                    </Fragment>
+                )}
             </ul>
 
             <ul className='nav navbar-nav navbar-right'>
                 <li className='nav-item'>
-                    <Link className='nav-link' to="#">
+                    <Link className='nav-link' to='#'>
                         Welcome, {user.name} ({user.position})
                     </Link>
                 </li>
@@ -62,7 +57,7 @@ const NavBar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
 
     return (
         <Fragment>
-            <nav className='navbar navbar-expand-md navbar-dark main-color-bg'>
+            <nav className='navbar navbar-expand-md navbar-dark main-color-bg sticky-top'>
                 <div className='container'>
                     <Link className='navbar-brand' to='#'>
                         AdminStrap

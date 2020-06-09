@@ -13,8 +13,10 @@ import Alert from './components/layout/Alert'
 import CreateStaff from './components/staff-form/CreateStaff'
 import PrivateRoute from './components/routing/PrivateRoute'
 import PermissionPage from './components/routing/PermissionPage'
-import AdminTrainerRoute from './components/routing/AdminTrainerRoute'
+import PermissionRoute from './components/routing/PermissionRoute'
 import EditStaff from './components/staff-form/EditStaff'
+import ChangeCredentials from './components/staff-form/ChangeCredentials'
+import Course from './components/course/Course'
 
 if (localStorage.token) {
     setAuthToken(localStorage.token)
@@ -42,7 +44,10 @@ const App = () => {
                         <PrivateRoute exact path='/' component={Home} />
                         <PrivateRoute exact path='/profile/:id' component={EditStaff} />
 
-                        <AdminTrainerRoute exact path='/staff/profile' component={CreateStaff} />
+                        <PermissionRoute exact path='/profile/:id/change-credentials' component={ChangeCredentials} />
+
+                        <PermissionRoute exact path='/staff/profile' component={CreateStaff} permissions={['admin', 'training-staff']} />
+                        <PermissionRoute exact path='/course' component={Course} permissions={['training-staff']} />
                     </Switch>
                 </section>
             </Router>

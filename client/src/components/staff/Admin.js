@@ -3,12 +3,16 @@ import PropTypes from 'prop-types'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
-import { getStaffs } from '../../actions/staff'
+import { getStaffs, deleteStaffById } from '../../actions/staff'
 
-const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
+const Admin = ({ getStaffs, staff: { loading, staffs }, deleteStaffById }) => {
     useEffect(() => {
         getStaffs()
     }, [getStaffs])
+
+    const deleteStaff = (id) => {
+        deleteStaffById(id)
+    }
 
     return loading ? (
         <h3 className='text-muted mt-3'>Loading staffs ...</h3>
@@ -17,13 +21,14 @@ const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
             <div className='card-header'>Latest Users</div>
 
             <div className='card-body card-table'>
-                <table className='table table-striped'>
+                <table className='table table-striped table-hover'>
                     <thead>
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Gender</th>
                             <th>Date Of Birth</th>
+                            <th>Ielts Degree</th>
                             <th>Position</th>
                             <th>Actions</th>
                         </tr>
@@ -33,16 +38,18 @@ const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
                         {staffs.length > 0 ? (
                             staffs.map(staff => 
                                 <tr key={staff._id}>
-                                    <td>{staff.name}</td>
+                                    <td><Link to={`/profile/${staff._id}`}>{staff.name}</Link></td>
                                     <td>{staff.email}</td>
                                     <td>{staff.gender}</td>
                                     <td>{staff.dateOfBirth}</td>
+                                    <td>{staff.ieltsDegree}</td>
                                     <td>{staff.position}</td>
                                     <td>
-                                        <Link to={`/profile/${staff._id}`}>
+                                        <Link to={`/profile/${staff._id}/change-credentials`}>
                                             <i className='fas fa-edit'></i>
                                         </Link>
-                                        <label id='remove-item'>
+
+                                        <label onClick={() => deleteStaff(staff._id)} id='remove-item'>
                                             <i className='fas fa-times'></i>
                                         </label>
                                     </td>
@@ -63,10 +70,11 @@ const Admin = ({ getStaffs, staff: { loading, staffs } }) => {
 Admin.propTypes = {
     getStaffs: PropTypes.func.isRequired,
     staff: PropTypes.object.isRequired,
+    deleteStaffById: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
     staff: state.staff,
 })
 
-export default connect(mapStateToProps, { getStaffs })(Admin)
+export default connect(mapStateToProps, { getStaffs, deleteStaffById })(Admin)
