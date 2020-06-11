@@ -1,4 +1,4 @@
-import { GET_STAFFS, GET_STAFFS_ERROR, CLEAR_STAFF, CLEAR_STAFFS, GET_STAFF, GET_STAFFS_POSITION } from '../actions/types'
+import { GET_STAFFS, GET_STAFFS_ERROR, CLEAR_STAFF, CLEAR_STAFFS, GET_STAFF, GET_STAFFS_POSITION, UPDATE_PROFILE } from '../actions/types'
 
 const initialState = {
     staff: {},
@@ -12,6 +12,7 @@ export default function(state = initialState, action) {
 
     switch (type) {
         case GET_STAFF:
+        case UPDATE_PROFILE: 
             return {
                 ...state,
                 staff: payload,

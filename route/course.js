@@ -4,11 +4,12 @@ const { check, validationResult } = require('express-validator')
 
 const Staff = require('../models/Staff')
 const Course = require('../models/Course')
+const Category = require('../models/Category')
 const auth = require('../middleware/auth')
 
 router.get('/', auth, async (req, res) => {
     try {
-        const courses = await Course.find()
+        const courses = await Course.find().populate('category', ['name'])
 
         if (courses.length === 0) {
             return res.status(404).json({ msg: 'There is no course here' })
@@ -28,7 +29,7 @@ router.post(
         [
             check('name', 'Name is required').not().isEmpty(),
             check('code', 'Code is required').not().isEmpty(),
-        ]
+        ],
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -37,15 +38,12 @@ router.post(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const {
-            name,
-            code
-        } = req.body
+        const { name, code } = req.body
 
         try {
             const course = new Course({
                 name: name.toUpperCase(),
-                code: code
+                code: code,
             })
 
             await course.save()
@@ -82,7 +80,8 @@ router.put(
         [
             check('name', 'Name is required').not().isEmpty(),
             check('code', 'Code is required').not().isEmpty(),
-        ]
+            check('categoryName', 'Category is required').not().isEmpty(),
+        ],
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -91,17 +90,17 @@ router.put(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const {
-            name,
-            code
-        } = req.body
-
-        const courseInfo = {}
-
-        if (name) courseInfo.name = name.toUpperCase()
-        if (code) courseInfo.code = code
+        const { name, code, categoryName } = req.body
 
         try {
+            const category = await Category.findOne({ name: categoryName })
+
+            const courseInfo = {}
+
+            if (name) courseInfo.name = name.toUpperCase()
+            if (code) courseInfo.code = code
+            if (category) courseInfo.category = category._id
+
             let course = await Course.findById(req.params.id)
 
             if (course) {
@@ -111,21 +110,27 @@ router.put(
                     { new: true }
                 )
 
-                course.staffs.map(async item => {
+                course.staffs.map(async (item) => {
                     const staff = await Staff.findById(item.staff)
 
                     if (!staff) {
-                        return res.status(404).json({ msg: 'This course have no staff' })
+                        return res
+                            .status(404)
+                            .json({ msg: 'This course have no staff' })
                     }
 
                     if (staff.courses.length > 0) {
-                        staff.courses = staff.courses.filter(courseOfStaff => courseOfStaff.course.toString() !== req.params.id)
+                        staff.courses = staff.courses.filter(
+                            (courseOfStaff) =>
+                                courseOfStaff.course.toString() !==
+                                req.params.id
+                        )
                     }
 
                     staff.courses.unshift({
                         course: course._id,
                         name: courseInfo.name,
-                        code: courseInfo.code
+                        code: courseInfo.code,
                     })
 
                     await staff.save()
@@ -150,7 +155,9 @@ router.delete('/:id', auth, async (req, res) => {
 
         if (course) {
             if (course.staffs.length > 0) {
-                return res.status(400).json({ msg: 'This course still has staffs' })
+                return res
+                    .status(400)
+                    .json({ msg: 'This course still has staffs' })
             }
 
             await course.remove()
@@ -166,5 +173,41 @@ router.delete('/:id', auth, async (req, res) => {
         }
     }
 })
+
+router.put(
+    '/:id/category',
+    [auth, check('categoryId', 'Course is required').not().isEmpty()],
+    async (req, res) => {
+        const errors = validationResult(req)
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() })
+        }
+
+        const { categoryId } = req.body
+
+        try {
+            let course = await Course.findById(req.params.id)
+            const category = await Category.findById(categoryId)
+
+            if (course) {
+                course = await Course.findOneAndUpdate(
+                    { _id: req.params.id },
+                    { category: category._id },
+                    { new: true }
+                )
+            }
+
+            res.json(course)
+        } catch (err) {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).json({ msg: 'There is no course/category here' })
+            } else {
+                console.error(err.message)
+                res.status(500).json({ msg: 'Server error' })
+            }
+        }
+    }
+)
 
 module.exports = router

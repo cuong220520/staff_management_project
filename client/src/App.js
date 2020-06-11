@@ -17,6 +17,15 @@ import PermissionRoute from './components/routing/PermissionRoute'
 import EditStaff from './components/staff-form/EditStaff'
 import ChangeCredentials from './components/staff-form/ChangeCredentials'
 import Course from './components/course/Course'
+import AssignCourse from './components/staff-form/AssignCourse'
+import Profile from './components/profile/Profile'
+import AddEducation from './components/profile-form/AddEducation'
+import AddExperience from './components/profile-form/AddExperience'
+import CreateCourse from './components/course-form/CreateCourse'
+import EditCourse from './components/course-form/EditCourse'
+import Topic from './components/topic/Topic'
+import CreateTopic from './components/topic-form/CreateTopic'
+import EditTopic from './components/topic-form/EditTopic'
 
 if (localStorage.token) {
     setAuthToken(localStorage.token)
@@ -40,14 +49,80 @@ const App = () => {
                     <Switch>
                         <Route exact path='/login' component={Login} />
 
-                        <PrivateRoute exact path='/403error' component={PermissionPage} />
+                        <PrivateRoute
+                            exact
+                            path='/403error'
+                            component={PermissionPage}
+                        />
                         <PrivateRoute exact path='/' component={Home} />
-                        <PrivateRoute exact path='/profile/:id' component={EditStaff} />
-
-                        <PermissionRoute exact path='/profile/:id/change-credentials' component={ChangeCredentials} />
-
-                        <PermissionRoute exact path='/staff/profile' component={CreateStaff} permissions={['admin', 'training-staff']} />
-                        <PermissionRoute exact path='/course' component={Course} permissions={['training-staff']} />
+                        <PermissionRoute
+                            exact
+                            path='/profile/:id'
+                            component={Profile}
+                            permissions={['admin', 'training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/profile/:id/edit'
+                            component={EditStaff}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/course/create'
+                            component={CreateCourse}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/topic/create'
+                            component={CreateTopic}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/course/:id/edit'
+                            component={EditCourse}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/topic/:id/edit'
+                            component={EditTopic}
+                            permissions={['training-staff']}
+                        />
+                        <PrivateRoute exact path='/profile/:id/education' component={AddEducation} />
+                        <PrivateRoute exact path='/profile/:id/experience' component={AddExperience} />
+                        <PermissionRoute
+                            exact
+                            path='/profile/:id/change-credentials'
+                            component={ChangeCredentials}
+                            permissions={['admin']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/staff/profile'
+                            component={CreateStaff}
+                            permissions={['admin', 'training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/course'
+                            component={Course}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/topic'
+                            component={Topic}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/staff/:id/course'
+                            component={AssignCourse}
+                            permissions={['training-staff']}
+                        />
                     </Switch>
                 </section>
             </Router>

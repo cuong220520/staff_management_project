@@ -11,23 +11,14 @@ const courseSchema = new mongoose.Schema({
     },
     staffs: [
         {
-            staff: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Staff'
-            },
-            name: {
-                type: String,
-                required: true
-            },
-            dateOfBirth: {
-                type: String,
-                required: true
-            },
-            image: {
-                type: String
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Staff'
         }
-    ]
+    ],
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Category'
+    }
 })
 
 module.exports = mongoose.model('Course', courseSchema)

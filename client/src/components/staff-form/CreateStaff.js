@@ -122,6 +122,7 @@ const CreateStaff = ({ createStaff, history }) => {
                             >
                                 <option value='trainer'>Trainer</option>
                                 <option value='training-staff'>Training Staff</option>
+                                <option value='trainee'>Trainee</option>
                             </select>
                         </div>
 

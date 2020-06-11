@@ -49,7 +49,7 @@ const Admin = ({ getStaffs, staff: { loading, staffs }, deleteStaffById }) => {
                                             <i className='fas fa-edit'></i>
                                         </Link>
 
-                                        <label onClick={() => deleteStaff(staff._id)} id='remove-item'>
+                                        <label onClick={() => deleteStaff(staff._id)} id='remove-item' className='pl-2'>
                                             <i className='fas fa-times'></i>
                                         </label>
                                     </td>

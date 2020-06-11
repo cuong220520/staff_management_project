@@ -6,11 +6,22 @@ const bcrypt = require('bcryptjs')
 
 const Staff = require('../models/Staff')
 const Course = require('../models/Course')
+const Topic = require('../models/Topic')
 const auth = require('../middleware/auth')
 
 router.get('/', auth, async (req, res) => {
     try {
-        const staffs = await Staff.find().select('-password')
+        const staffs = await Staff.find()
+            .select('-password')
+            .populate({
+                path: 'topics',
+                select: ['name', 'code'],
+                populate: {
+                    path: 'courses',
+                    select: ['name', 'code'],
+                    model: 'Course',
+                },
+            })
 
         if (staffs.length === 0) {
             return res.status(404).json({ msg: 'There is no staff here' })
@@ -122,7 +133,18 @@ router.get('/:position', auth, async (req, res) => {
 
 router.get('/profile/:id', auth, async (req, res) => {
     try {
-        const staff = await Staff.findById(req.params.id).select('-password')
+        const staff = await Staff.findById(req.params.id)
+            .select('-password')
+            .populate({
+                path: 'topics',
+                select: ['name', 'code'],
+                populate: {
+                    path: 'courses',
+                    select: ['name', 'code'],
+                    model: 'Course',
+                },
+            })
+            .populate('courses', ['name', 'code'])
 
         if (staff) {
             res.json(staff)
@@ -177,6 +199,7 @@ router.put(
             if (gender) staffProfile.gender = gender
             if (date) staffProfile.date = date
             if (position) staffProfile.position = position
+            if (dateOfBirth) staffProfile.dateOfBirth = date
             if (ieltsDegree) staffProfile.ieltsDegree = ieltsDegree
             if (image) {
                 staffProfile.image = image
@@ -231,28 +254,24 @@ router.put(
 router.delete('/profile/:id', auth, async (req, res) => {
     try {
         const staff = await Staff.findById(req.params.id)
-        staff.courses.map(async (item) => {
-            const course = await Course.findById(item.course)
+        if (staff.courses.length > 0) {
+            staff.courses.map(async (item) => {
+                const course = await Course.findById(item._id)
 
-            if (!course) {
-                return res
-                    .status(404)
-                    .json({ msg: 'This staff has not joined any course yet' })
-            }
+                if (course.staffs.length > 0) {
+                    course.staffs = course.staffs.filter(
+                        (staffInCourse) =>
+                            staffInCourse._id.toString() !== req.params.id
+                    )
 
-            if (course.staffs.length > 0) {
-                course.staffs = course.staffs.filter(
-                    (staffInCourse) =>
-                        staffInCourse.staff.toString() !== req.params.id
-                )
-
-                await course.save()
-            }
-        })
+                    await course.save()
+                }
+            })
+        }
 
         if (staff) {
             await staff.remove()
-            res.json({ msg: 'Staff remove successfully' })
+            res.json({ msg: 'Staff removed' })
         }
     } catch (err) {
         if (err.kind === 'ObjectId') {
@@ -288,22 +307,17 @@ router.put('/profile/:id/course', auth, async (req, res) => {
                 .json({ msg: 'This staff is already in this course' })
         } else {
             staff.courses.unshift({
-                course: course._id,
-                name: course.name,
-                code: course.code,
+                _id: course._id,
             })
 
             course.staffs.unshift({
-                staff: staff._id,
-                name: staff.name,
-                dateOfBirth: staff.dateOfBirth,
-                image: staff.image,
+                _id: staff._id,
             })
 
             await staff.save()
             await course.save()
 
-            res.json(staff.courses)
+            res.json(staff)
         }
     } catch (err) {
         if (err.kind === 'ObjectId') {
@@ -312,6 +326,67 @@ router.put('/profile/:id/course', auth, async (req, res) => {
             console.error(err.message)
             res.status(500).json({ msg: 'Server error' })
         }
+    }
+})
+
+router.put('/profile/:id/topic', auth, async (req, res) => {
+    const { code } = req.body
+
+    try {
+        let staff = await Staff.findById(req.params.id)
+
+        const topic = await Topic.findOne({ code: code })
+
+        if (!topic) {
+            return res
+                .status(404)
+                .json({ msg: 'There is no topic for this code' })
+        }
+
+        const already = staff.topics.filter(
+            (item) => item._id.toString() === topic.id
+        )
+
+        if (already.length !== 0) {
+            return res
+                .status(400)
+                .json({ msg: 'This staff is already in this topic' })
+        } else {
+            staff.topics.unshift({
+                _id: topic._id,
+            })
+
+            await staff.save()
+
+            res.json(staff)
+        }
+    } catch (err) {
+        if (err.kind === 'ObjectId') {
+            res.status(404).json({ msg: 'There is no staff here' })
+        } else {
+            console.error(err.message)
+            res.status(500).json({ msg: 'Server error' })
+        }
+    }
+})
+
+router.delete('/profile/:id/topic/:topic_id', auth, async (req, res) => {
+    try {
+        const staff = await Staff.findById(req.params.id)
+
+        // get remove index
+        const removeIndex = staff.topics
+            .map((topic) => topic.id)
+            .indexOf(req.params.topic_id)
+
+        staff.topics.splice(removeIndex, 1)
+
+        await staff.save()
+
+        res.json(staff)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).json({ msg: 'Server error' })
     }
 })
 
@@ -326,9 +401,6 @@ router.delete('/profile/:id/course/:courseId', auth, async (req, res) => {
         const removeIndexForCourse = course.staffs
             .map((item) => item.staff)
             .indexOf(req.params.id)
-
-        console.log(removeIndexForStaff + 'staff')
-        console.log(removeIndexForCourse + 'course')
 
         staff.courses.splice(removeIndexForStaff, 1)
         course.staffs.splice(removeIndexForCourse, 1)
@@ -348,7 +420,7 @@ router.delete('/profile/:id/course/:courseId', auth, async (req, res) => {
 })
 
 router.put(
-    '/experience',
+    '/experience/:id',
     [
         auth,
         [
@@ -376,9 +448,7 @@ router.put(
         }
 
         try {
-            const staff = await Staff.findById(req.staff.id)
-
-            console.log(staff)
+            const staff = await Staff.findById(req.params.id)
 
             staff.experience.unshift(newExp)
 
@@ -392,9 +462,9 @@ router.put(
     }
 )
 
-router.delete('/experience/:exp_id', auth, async (req, res) => {
+router.delete('/experience/:id/:exp_id', auth, async (req, res) => {
     try {
-        const staff = await Staff.findById(req.user.id)
+        const staff = await Staff.findById(req.params.id)
 
         // get remove index
         const removeIndex = staff.experience
@@ -413,7 +483,7 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
 })
 
 router.put(
-    '/education',
+    '/education/:id',
     [
         auth,
         [
@@ -451,7 +521,7 @@ router.put(
         }
 
         try {
-            const staff = await Staff.findById(req.user.id)
+            const staff = await Staff.findById(req.params.id)
 
             staff.education.unshift(newEdu)
 
@@ -465,9 +535,9 @@ router.put(
     }
 )
 
-router.delete('/education/:edu_id', auth, async (req, res) => {
+router.delete('/education/:id/:edu_id', auth, async (req, res) => {
     try {
-        const staff = await Staff.findById(req.user.id)
+        const staff = await Staff.findById(req.params.id)
 
         // get remove index
         const removeIndex = staff.education
@@ -489,10 +559,11 @@ router.put(
     '/profile/:id/change-credentials',
     auth,
     [
-        check('email', 'Email is required')
-            .not()
-            .isEmpty(),
-        check('password', 'Please enter a password with 6 or more characters').isLength({ min: 6 })
+        check('email', 'Email is required').not().isEmpty(),
+        check(
+            'password',
+            'Please enter a password with 6 or more characters'
+        ).isLength({ min: 6 }),
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -501,17 +572,20 @@ router.put(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        
         let { email, password } = req.body
         try {
-          let staff = await Staff.findById(req.params.id)
-          
-          const salt = await bcrypt.genSalt(10)
-          password = await bcrypt.hash(password, salt)
+            let staff = await Staff.findById(req.params.id)
 
-          staff = await Staff.findOneAndUpdate({ _id: staff.id }, { email: email }, { password: password })          
+            const salt = await bcrypt.genSalt(10)
+            password = await bcrypt.hash(password, salt)
 
-          res.json(staff)
+            staff = await Staff.findOneAndUpdate(
+                { _id: staff.id },
+                { email: email },
+                { password: password }
+            )
+
+            res.json(staff)
         } catch (err) {
             console.error(err.message)
             res.status(500).send('Server error')

@@ -23,6 +23,12 @@ const NavBar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
                                 Course
                             </Link>
                         </li>
+
+                        <li className='nav-item'>
+                            <Link className='nav-link' to='/topic'>
+                                Topic
+                            </Link>
+                        </li>
                     </Fragment>
                 )}
             </ul>

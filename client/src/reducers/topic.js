@@ -1,14 +1,14 @@
 import {
-    GET_COURSES,
-    GET_COURSES_ERROR,
-    CLEAR_COURSE,
-    CLEAR_COURSES,
-    GET_COURSE
+    GET_TOPIC,
+    GET_TOPICS,
+    GET_TOPICS_ERROR,
+    CLEAR_TOPIC,
+    CLEAR_TOPICS,
 } from '../actions/types'
 
 const initialState = {
-    course: {},
-    courses: [],
+    topic: {},
+    topics: [],
     loading: true,
     error: {},
 }
@@ -17,44 +17,44 @@ export default function (state = initialState, action) {
     const { type, payload } = action
 
     switch (type) {
-        case GET_COURSES:
+        case GET_TOPICS:
             return {
                 ...state,
-                courses: payload,
+                topics: payload,
                 loading: false,
                 error: {},
             }
 
-        case GET_COURSE:
+        case GET_TOPIC:
             return {
                 ...state,
-                course: payload,
+                topic: payload,
                 loading: false,
                 error: {}
             }
 
-        case GET_COURSES_ERROR: {
+        case GET_TOPICS_ERROR: {
             return {
                 ...state,
-                courses: [],
+                topics: [],
                 loading: false,
                 error: payload,
             }
         }
 
-        case CLEAR_COURSE: {
+        case CLEAR_TOPIC: {
             return {
                 ...state,
-                course: {},
+                topic: {},
                 error: {},
                 loading: false,
             }
         }
 
-        case CLEAR_COURSES: {
+        case CLEAR_TOPICS: {
             return {
                 ...state,
-                courses: [],
+                topics: [],
                 error: {},
                 loading: false,
             }

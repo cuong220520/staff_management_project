@@ -18,6 +18,8 @@ db.once('open', () => console.log('Connected to mongoose'))
 app.use('/api/staff', require('./route/staff'))
 app.use('/api/course', require('./route/course'))
 app.use('/api/auth', require('./route/auth'))
+app.use('/api/topic', require('./route/topic'))
+app.use('/api/category', require('./route/category'))
 
 const PORT = process.env.PORT || 5000
 

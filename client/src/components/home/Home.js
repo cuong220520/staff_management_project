@@ -22,7 +22,7 @@ const Landing = ({ auth: { loading, user } }) => {
             <div className='card mt-4 mb-4'>
                 <div className='card-header main-color-bg'>
                     <h4>
-                        <i class='far fa-address-book'></i> Management System
+                        <i className='far fa-address-book'></i> Management System
                     </h4>
                 </div>
 

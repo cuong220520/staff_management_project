@@ -3,20 +3,35 @@ export const REMOVE_ALERT = 'REMOVE_ALERT'
 
 export const USER_LOADED = 'USER_LOADED'
 export const AUTH_ERROR = 'AUTH_ERROR'
-
 export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
 export const LOGIN_FAIL = 'LOGIN_FAIL'
-
 export const LOGOUT = 'LOGOUT'
 
 export const GET_STAFFS = 'GET_STAFFS'
 export const GET_STAFFS_POSITION = 'GET_STAFFS_POSITION'
 export const GET_STAFFS_ERROR = 'GET_STAFFS_ERROR'
-
+export const UPDATE_PROFILE = 'UPDATE_PROFILE'
 export const GET_STAFF = 'GET_STAFF'
-
 export const CLEAR_STAFF = 'CLEAR_STAFF'
 export const CLEAR_STAFFS = 'CLEAR_STAFFS'
 
 export const GET_COURSES = 'GET_COURSES'
 export const GET_COURSES_ERROR = 'GET_COURSES_ERROR'
+export const GET_COURSE = 'GET_COURSE'
+export const CLEAR_COURSE = 'CLEAR_COURSE'
+export const CLEAR_COURSES = 'CLEAR_COURSES'
+
+export const GET_CATEGORIES = 'GET_CATEGORIES'
+export const GET_CATEGORIES_ERROR = 'GET_CATEGORIES_ERROR'
+export const GET_CATEGORY = 'GET_CATEGORY'
+export const CLEAR_CATEGORY = 'CLEAR_CATEGORY'
+export const CLEAR_CATEGORIES = 'CLEAR_CATEGORIES'
+
+export const GET_TOPICS = 'GET_TOPICS'
+export const GET_TOPIC = 'GET_TOPIC'
+export const GET_TOPICS_ERROR = 'GET_TOPICS_ERROR'
+export const CLEAR_TOPIC = 'CLEAR_TOPIC'
+export const CLEAR_TOPICS = 'CLEAR_TOPICS'
+
+
+

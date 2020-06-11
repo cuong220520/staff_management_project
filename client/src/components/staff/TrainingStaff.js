@@ -1,14 +1,23 @@
 import React, { useEffect, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { Link } from 'react-router-dom'
 
-import { getStaffsByPosition } from '../../actions/staff'
+import { getStaffsByPosition, deleteStaffById } from '../../actions/staff'
 
-const TrainingStaff = ({ getStaffsByPosition, staff: { loading, staffs } }) => {
+const TrainingStaff = ({
+    getStaffsByPosition,
+    staff: { loading, staffs },
+    deleteStaffById,
+}) => {
     useEffect(() => {
         getStaffsByPosition('trainee')
         getStaffsByPosition('trainer')
     }, [getStaffsByPosition])
+
+    const deleteStaff = (id) => {
+        deleteStaffById(id)
+    }
 
     return loading ? (
         <h3 className='text-muted mt-3'>Loading staffs ...</h3>
@@ -48,7 +57,9 @@ const TrainingStaff = ({ getStaffsByPosition, staff: { loading, staffs } }) => {
                                     ))
                             ) : (
                                 <tr>
-                                    <td colSpan='6' className='text-muted'>No Staff found</td>
+                                    <td colSpan='6' className='text-muted'>
+                                        No Staff found
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -80,17 +91,48 @@ const TrainingStaff = ({ getStaffsByPosition, staff: { loading, staffs } }) => {
                                     )
                                     .map((staff) => (
                                         <tr key={staff._id}>
-                                            <td>{staff.name}</td>
+                                            <td>
+                                                <Link
+                                                    to={`/profile/${staff._id}`}
+                                                >
+                                                    {staff.name}
+                                                </Link>
+                                            </td>
                                             <td>{staff.email}</td>
                                             <td>{staff.gender}</td>
                                             <td>{staff.dateOfBirth}</td>
                                             <td>{staff.position}</td>
-                                            <td></td>
+                                            <td>
+                                                <Link
+                                                    to={`/staff/${staff._id}/course`}
+                                                >
+                                                    <i className='fas fa-plus'></i>
+                                                </Link>
+                                                {'  '}
+                                                <Link
+                                                    to={`/profile/${staff._id}/edit`}
+                                                    className='pl-2'
+                                                >
+                                                    <i className='fas fa-edit'></i>
+                                                </Link>
+
+                                                <label
+                                                    onClick={() =>
+                                                        deleteStaff(staff._id)
+                                                    }
+                                                    className='pl-2'
+                                                    id='remove-item'
+                                                >
+                                                    <i className='fas fa-times'></i>
+                                                </label>
+                                            </td>
                                         </tr>
                                     ))
                             ) : (
                                 <tr>
-                                    <td colSpan='6' className='text-muted'>No Staff found</td>
+                                    <td colSpan='6' className='text-muted'>
+                                        No Staff found
+                                    </td>
                                 </tr>
                             )}
                         </tbody>
@@ -104,10 +146,14 @@ const TrainingStaff = ({ getStaffsByPosition, staff: { loading, staffs } }) => {
 TrainingStaff.propTypes = {
     getStaffsByPosition: PropTypes.func.isRequired,
     staff: PropTypes.object.isRequired,
+    deleteStaffById: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
     staff: state.staff,
 })
 
-export default connect(mapStateToProps, { getStaffsByPosition })(TrainingStaff)
+export default connect(mapStateToProps, {
+    getStaffsByPosition,
+    deleteStaffById,
+})(TrainingStaff)

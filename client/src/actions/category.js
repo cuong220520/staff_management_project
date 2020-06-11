@@ -1,29 +1,30 @@
 import axios from 'axios'
 
 import {
-    GET_COURSES,
-    GET_COURSES_ERROR,
-    CLEAR_COURSES,
-    GET_COURSE,
-    CLEAR_COURSE,
+    GET_CATEGORIES,
+    GET_CATEGORIES_ERROR,
+    CLEAR_CATEGORIES,
+    GET_CATEGORY,
+    CLEAR_CATEGORY,
 } from './types'
+
 import { setAlert } from './alert'
 
-export const getCourses = () => async (dispatch) => {
+export const getCategories = () => async (dispatch) => {
     dispatch({
-        type: CLEAR_COURSE,
+        type: CLEAR_CATEGORY,
     })
 
     try {
-        const res = await axios.get('/api/course')
+        const res = await axios.get('/api/category')
 
         dispatch({
-            type: GET_COURSES,
+            type: GET_CATEGORIES,
             payload: res.data,
         })
     } catch (err) {
         dispatch({
-            type: GET_COURSES_ERROR,
+            type: GET_CATEGORIES_ERROR,
             payload: {
                 msg: err.response.statusText,
                 status: err.response.status,
@@ -32,16 +33,16 @@ export const getCourses = () => async (dispatch) => {
     }
 }
 
-export const getCourseById = (id) => async (dispatch) => {
+export const getCategoryById = (id) => async (dispatch) => {
     dispatch({
-        type: CLEAR_COURSES,
+        type: CLEAR_CATEGORIES,
     })
 
     try {
-        const res = await axios.get(`/api/course/${id}`)
+        const res = await axios.get(`/api/category/${id}`)
 
         dispatch({
-            type: GET_COURSE,
+            type: GET_CATEGORY,
             payload: res.data,
         })
     } catch (err) {
@@ -51,7 +52,7 @@ export const getCourseById = (id) => async (dispatch) => {
     }
 }
 
-export const createCourse = (formData, history) => async (dispatch) => {
+export const createCategory = (formData, history) => async (dispatch) => {
     const config = {
         headers: {
             'Content-Types': 'application/json',
@@ -59,11 +60,11 @@ export const createCourse = (formData, history) => async (dispatch) => {
     }
 
     try {
-        await axios.post('/api/course', formData, config)
+        await axios.post('/api/category', formData, config)
 
-        dispatch(setAlert('Create course successfully', 'success'))
+        dispatch(setAlert('Create category successfully', 'success'))
 
-        history.push('/course')
+        history.push('/category')
     } catch (err) {
         const errors = err.response.data.errors
 
@@ -73,7 +74,9 @@ export const createCourse = (formData, history) => async (dispatch) => {
     }
 }
 
-export const updateCourseById = (id, formData, history) => async (dispatch) => {
+export const updateCategoryById = (id, formData, history) => async (
+    dispatch
+) => {
     const config = {
         headers: {
             'Content-Types': 'application/json',
@@ -81,13 +84,11 @@ export const updateCourseById = (id, formData, history) => async (dispatch) => {
     }
 
     try {
-        console.log(formData)
+        await axios.put(`/api/category/${id}`, formData, config)
 
-        await axios.put(`/api/course/${id}`, formData, config)
+        dispatch(setAlert('Update category successfully', 'success'))
 
-        dispatch(setAlert('Update course successfully', 'success'))
-
-        history.push('/course')
+        history.push('/category')
     } catch (err) {
         const errors = err.response.data.errors
 
@@ -97,11 +98,11 @@ export const updateCourseById = (id, formData, history) => async (dispatch) => {
     }
 }
 
-export const deleteCourseById = (id) => async (dispatch) => {
+export const deleteCategoryById = (id) => async (dispatch) => {
     try {
-        const res = await axios.delete(`/api/course/${id}`)
+        const res = await axios.delete(`/api/category/${id}`)
 
-        dispatch(getCourses())
+        dispatch(getCategories())
 
         dispatch(setAlert(res.data.msg, 'success'))
     } catch (err) {

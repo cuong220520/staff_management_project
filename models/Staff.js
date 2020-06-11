@@ -30,19 +30,15 @@ const staffSchema = new mongoose.Schema({
     },
     courses: [
         {
-            course: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: 'Course',
-            },
-            name: {
-                type: String,
-                required: true,
-            },
-            code: {
-                type: String,
-                required: true,
-            },
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Course'
         },
+    ],
+    topics: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Topic'
+        }
     ],
     experience: [
         {
