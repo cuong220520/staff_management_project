@@ -31,12 +31,11 @@ const EditStaff = ({
             gender: loading || !staff.gender ? '' : staff.gender,
             dateOfBirth: loading || !staff.dateOfBirth ? '' : staff.dateOfBirth,
             ieltsDegree: loading || !staff.ieltsDegree ? '' : staff.ieltsDegree,
-            position: loading || !staff.position ? '' : staff.position,
         })
         // eslint-disable-next-line
     }, [loading, staff._id, getStaffById])
 
-    const { name, gender, dateOfBirth, ieltsDegree, position } = formData
+    const { name, gender, dateOfBirth, ieltsDegree } = formData
 
     const onChange = (event) => {
         setFormData({ ...formData, [event.target.name]: event.target.value })
@@ -114,15 +113,9 @@ const EditStaff = ({
 
                         <div className='form-group'>
                             <label>Position</label>
-                            <select
-                                name='position'
-                                className='form-control'
-                                onChange={onChange}
-                                value={position}
-                            >
-                                <option value='trainer'>Trainer</option>
-                                <option value='training-staff'>Training Staff</option>
-                            </select>
+                            <p name='position' className='form-control' readOnly={true}>
+                                {staff.position}
+                            </p>
                         </div>
 
                         <button

@@ -1,39 +1,43 @@
 import React, { useEffect, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { getTopics, deleteTopicById } from '../../actions/topic'
-import { connect } from 'react-redux'
+import { getCategories, deleteCategoryById } from '../../actions/category'
 import Spinner from '../layout/Spinner'
 
-const Topic = ({ getTopics, deleteTopicById, topic: { topics, loading } }) => {
+const Category = ({
+    getCategories,
+    category: { categories, loading },
+    deleteCategoryById,
+}) => {
     useEffect(() => {
-        getTopics()
-    }, [getTopics, loading])
+        getCategories()
+    }, [getCategories, loading])
 
-    const deleteTopic = (id) => {
-        deleteTopicById(id)
+    const deleteCategory = (id) => {
+        deleteCategoryById(id)
     }
 
     return loading ? (
         <Spinner />
     ) : (
         <Fragment>
-            <Link className='btn btn-primary mt-4' to='/topic/create'>
-                <i className='fas fa-plus'></i> Create Topic
+            <Link className='btn btn-primary mt-4' to='/category/create'>
+                <i className='fas fa-plus'></i> Create Category
             </Link>
 
             <div className='card mt-4'>
                 <div className='card-header main-color-bg'>
                     <h4>
-                        <i className='fas fa-coins'></i> Topics Management
+                        <i className='fas fa-coins'></i> Category Management
                     </h4>
                 </div>
 
                 <div className='card-body'>
                     <div className='card mt-3'>
                         <div className='card-header'>
-                            All topics in program
+                            All categories in program
                         </div>
 
                         <div className='card-body card-table'>
@@ -41,36 +45,30 @@ const Topic = ({ getTopics, deleteTopicById, topic: { topics, loading } }) => {
                                 <thead>
                                     <tr>
                                         <th>Name</th>
-                                        <th>Code</th>
-                                        <th>Courses</th>
+                                        <th>Description</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
 
                                 <tbody>
-                                    {topics.length > 0 ? (
-                                        topics.map((topic) => (
-                                            <tr key={topic._id}>
-                                                <td>{topic.name}</td>
-                                                <td>{topic.code}</td>
+                                    {categories.length > 0 ? (
+                                        categories.map((category) => (
+                                            <tr key={category._id}>
+                                                <td>{category.name}</td>
                                                 <td>
-                                                    {topic.courses && 
-                                                        topic.courses.map(course => (
-                                                            <p key={course._id}>{course.name} - {course.code} <br /></p>
-                                                        ))
-                                                    }
+                                                    {category.description}
                                                 </td>
                                                 <td>
                                                     <Link
-                                                        to={`/topic/${topic._id}/edit`}
+                                                        to={`/category/${category._id}/edit`}
                                                     >
                                                         <i className='fas fa-edit'></i>
                                                     </Link>
 
                                                     <label
                                                         onClick={() =>
-                                                            deleteTopic(
-                                                                topic._id
+                                                            deleteCategory(
+                                                                category._id
                                                             )
                                                         }
                                                         id='remove-item'
@@ -101,14 +99,15 @@ const Topic = ({ getTopics, deleteTopicById, topic: { topics, loading } }) => {
     )
 }
 
-Topic.propTypes = {
-    getTopics: PropTypes.func.isRequired,
-    topic: PropTypes.object.isRequired,
-    deleteTopicById: PropTypes.func.isRequired,
+Category.propTypes = {
+    getCategories: PropTypes.func.isRequired,
+    deleteCategoryById: PropTypes.func.isRequired,
 }
 
-const mapStateToProps = state => ({
-    topic: state.topic
+const mapStateToProps = (state) => ({
+    category: state.category
 })
 
-export default connect(mapStateToProps, { getTopics, deleteTopicById })(Topic)
+export default connect(mapStateToProps, { getCategories, deleteCategoryById })(
+    Category
+)

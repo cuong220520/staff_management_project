@@ -58,7 +58,7 @@ router.post(
 
 router.get('/:id', auth, async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id)
+        const course = await Course.findById(req.params.id).populate('category', ['name'])
 
         if (course) {
             res.json(course)
@@ -109,32 +109,6 @@ router.put(
                     { $set: courseInfo },
                     { new: true }
                 )
-
-                course.staffs.map(async (item) => {
-                    const staff = await Staff.findById(item.staff)
-
-                    if (!staff) {
-                        return res
-                            .status(404)
-                            .json({ msg: 'This course have no staff' })
-                    }
-
-                    if (staff.courses.length > 0) {
-                        staff.courses = staff.courses.filter(
-                            (courseOfStaff) =>
-                                courseOfStaff.course.toString() !==
-                                req.params.id
-                        )
-                    }
-
-                    staff.courses.unshift({
-                        course: course._id,
-                        name: courseInfo.name,
-                        code: courseInfo.code,
-                    })
-
-                    await staff.save()
-                })
 
                 res.json(course)
             }

@@ -119,7 +119,7 @@ const EditTopic = ({
                                         key={course._id}
                                         value={course.code}
                                     >
-                                        {course.name}
+                                        {course.name} - {course.code}
                                     </option>
                                 ))}
                             </select>

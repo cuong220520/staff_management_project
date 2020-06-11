@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { getCourses } from '../../actions/course'
-import { assignCourse, getStaffById } from '../../actions/staff'
+import { getTopics } from '../../actions/topic'
+import { assignTopic, getStaffById } from '../../actions/staff'
 import Spinner from '../layout/Spinner'
 
-const AssignCourse = ({
-    getCourses,
-    assignCourse,
-    course: { courses, loading },
+const AssignTopic = ({
+    getTopics,
+    assignTopic,
+    topic: { topics, loading },
     staff,
     match,
     getStaffById,
@@ -22,19 +22,19 @@ const AssignCourse = ({
     }
 
     useEffect(() => {
-        getCourses()
+        getTopics()
         getStaffById(match.params.id)
 
 
-    }, [getCourses, getStaffById, loading, match])
+    }, [getTopics, getStaffById, loading, match])
 
     const onSubmit = (event) => {
         event.preventDefault()
 
-        assignCourse(match.params.id, { code }, history)
+        assignTopic(match.params.id, { code }, history)
     }
 
-    return loading ? (
+    return loading || staff.loading ? (
         <Spinner />
     ) : (
         <div className='container mt-4'>
@@ -63,17 +63,17 @@ const AssignCourse = ({
                         </div>
 
                         <div className='form-group'>
-                            <label>Course</label>
+                            <label>Topic</label>
                             <select
                                 name='code'
                                 className='form-control'
                                 onChange={onChange}
                                 value={code}
                             >
-                                <option value=''>Choose Course</option>
-                                {courses.map((course) => (
-                                    <option key={course._id} value={course.code}>
-                                        {course.name}
+                                <option value=''>Choose Topic</option>
+                                {topics.map((topic) => (
+                                    <option key={topic._id} value={topic.code}>
+                                        {topic.name}
                                     </option>
                                 ))}
                             </select>
@@ -94,21 +94,21 @@ const AssignCourse = ({
     )
 }
 
-AssignCourse.propTypes = {
-    course: PropTypes.object.isRequired,
+AssignTopic.propTypes = {
+    topic: PropTypes.object.isRequired,
     staff: PropTypes.object.isRequired,
-    getCourses: PropTypes.func.isRequired,
-    assignCourse: PropTypes.func.isRequired,
+    getTopics: PropTypes.func.isRequired,
+    assignTopic: PropTypes.func.isRequired,
     getStaffById: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
-    course: state.course,
+    topic: state.topic,
     staff: state.staff.staff,
 })
 
 export default connect(mapStateToProps, {
-    getCourses,
-    assignCourse,
+    getTopics,
+    assignTopic,
     getStaffById,
-})(AssignCourse)
+})(AssignTopic)

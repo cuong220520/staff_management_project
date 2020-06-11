@@ -26,6 +26,10 @@ import EditCourse from './components/course-form/EditCourse'
 import Topic from './components/topic/Topic'
 import CreateTopic from './components/topic-form/CreateTopic'
 import EditTopic from './components/topic-form/EditTopic'
+import AssignTopic from './components/staff-form/AssignTopic'
+import Category from './components/category/Category'
+import CreateCategory from './components/category-form/CreateCategory'
+import EditCategory from './components/category-form/EditCategory'
 
 if (localStorage.token) {
     setAuthToken(localStorage.token)
@@ -59,13 +63,13 @@ const App = () => {
                             exact
                             path='/profile/:id'
                             component={Profile}
-                            permissions={['admin', 'training-staff']}
+                            permissions={['admin', 'training-staff', 'trainer', 'trainee']}
                         />
                         <PermissionRoute
                             exact
                             path='/profile/:id/edit'
                             component={EditStaff}
-                            permissions={['training-staff']}
+                            permissions={['training-staff', 'trainee', 'trainer']}
                         />
                         <PermissionRoute
                             exact
@@ -81,6 +85,12 @@ const App = () => {
                         />
                         <PermissionRoute
                             exact
+                            path='/category/create'
+                            component={CreateCategory}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
                             path='/course/:id/edit'
                             component={EditCourse}
                             permissions={['training-staff']}
@@ -89,6 +99,12 @@ const App = () => {
                             exact
                             path='/topic/:id/edit'
                             component={EditTopic}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/category/:id/edit'
+                            component={EditCategory}
                             permissions={['training-staff']}
                         />
                         <PrivateRoute exact path='/profile/:id/education' component={AddEducation} />
@@ -119,8 +135,20 @@ const App = () => {
                         />
                         <PermissionRoute
                             exact
+                            path='/category'
+                            component={Category}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
                             path='/staff/:id/course'
                             component={AssignCourse}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/staff/:id/topic'
+                            component={AssignTopic}
                             permissions={['training-staff']}
                         />
                     </Switch>

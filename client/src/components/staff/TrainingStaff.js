@@ -47,12 +47,41 @@ const TrainingStaff = ({
                                     )
                                     .map((staff) => (
                                         <tr key={staff._id}>
-                                            <td>{staff.name}</td>
+                                            <td>
+                                                <Link
+                                                    to={`/profile/${staff._id}`}
+                                                >
+                                                    {staff.name}
+                                                </Link>
+                                            </td>
                                             <td>{staff.email}</td>
                                             <td>{staff.gender}</td>
                                             <td>{staff.dateOfBirth}</td>
                                             <td>{staff.position}</td>
-                                            <td></td>
+                                            <td>
+                                                <Link
+                                                    to={`/staff/${staff._id}/topic`}
+                                                >
+                                                    <i className='fas fa-plus'></i>
+                                                </Link>
+                                                {'  '}
+                                                <Link
+                                                    to={`/profile/${staff._id}/edit`}
+                                                    className='pl-2'
+                                                >
+                                                    <i className='fas fa-edit'></i>
+                                                </Link>
+
+                                                <label
+                                                    onClick={() =>
+                                                        deleteStaff(staff._id)
+                                                    }
+                                                    className='pl-2'
+                                                    id='remove-item'
+                                                >
+                                                    <i className='fas fa-times'></i>
+                                                </label>
+                                            </td>
                                         </tr>
                                     ))
                             ) : (

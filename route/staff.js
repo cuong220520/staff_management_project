@@ -167,7 +167,6 @@ router.put(
             check('name', 'Name is required').not().isEmpty(),
             check('gender', 'Gender is required').not().isEmpty(),
             check('dateOfBirth', 'Birth date is required').not().isEmpty(),
-            check('position', 'Position is required').not().isEmpty(),
         ],
     ],
     async (req, res) => {
@@ -181,7 +180,6 @@ router.put(
             name,
             gender,
             dateOfBirth,
-            position,
             image,
             ieltsDegree,
         } = req.body
@@ -198,7 +196,6 @@ router.put(
             if (name) staffProfile.name = name
             if (gender) staffProfile.gender = gender
             if (date) staffProfile.date = date
-            if (position) staffProfile.position = position
             if (dateOfBirth) staffProfile.dateOfBirth = date
             if (ieltsDegree) staffProfile.ieltsDegree = ieltsDegree
             if (image) {
@@ -298,7 +295,7 @@ router.put('/profile/:id/course', auth, async (req, res) => {
         }
 
         const already = staff.courses.filter(
-            (item) => item.course.toString() === course.id
+            (item) => item._id.toString() === course.id
         )
 
         if (already.length !== 0) {
@@ -559,7 +556,7 @@ router.put(
     '/profile/:id/change-credentials',
     auth,
     [
-        check('email', 'Email is required').not().isEmpty(),
+        check('email', 'Invalid email').isEmail(),
         check(
             'password',
             'Please enter a password with 6 or more characters'

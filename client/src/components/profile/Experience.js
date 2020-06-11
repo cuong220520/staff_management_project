@@ -37,7 +37,7 @@ const Experience = ({ experience, deleteExperience, id }) => {
             </div>
         </div>
     ) : (
-        <div className='card mt-4'>
+        <div className='card mt-4 card-overflow'>
             <div className='card-header'>
                 <i className='fas fa-file-invoice'></i> Staff Experience
             </div>

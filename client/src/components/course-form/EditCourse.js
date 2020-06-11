@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 
 import { getCourseById, updateCourseById } from '../../actions/course'
 import { getCategories } from '../../actions/category'
+import Spinner from '../layout/Spinner'
 
 const EditCourse = ({
     history,
@@ -20,14 +21,17 @@ const EditCourse = ({
         categoryName: '',
     })
 
+    console.log(course.category)
+
     useEffect(() => {
-        getCategories()
         getCourseById(match.params.id)
+        getCategories()
 
         console.log(category.categories)
         setFormData({
             name: loading || !course.name ? '' : course.name,
-            code: loading || !course.code ? '' : course.code
+            code: loading || !course.code ? '' : course.code,
+            categoryName: loading || !course.category ? '' : course.category.name
         })
         // eslint-disable-next-line
     }, [
@@ -53,7 +57,9 @@ const EditCourse = ({
         updateCourseById(match.params.id, formData, history)
     }
 
-    return (
+    return loading || !course ? (
+        <Spinner />
+    ) : (
         <div className='container mt-4'>
             <h1 className='text-center mb-4'>
                 <i className='fas fa-edit'></i>
@@ -96,7 +102,7 @@ const EditCourse = ({
                         <div className='form-group'>
                             <label>Category</label>
                             <select
-                                name='category'
+                                name='categoryName'
                                 className='form-control'
                                 onChange={onChange}
                                 value={categoryName}

@@ -275,6 +275,26 @@ export const deleteExperience = (id, exp_id) => async dispatch => {
     }
 }
 
+export const assignTopic = (id, code, history) => async dispatch => {
+    const config = {
+        headers: {
+            'ContentType': 'application/json'
+        }
+    }
+
+    try {
+        await axios.put(`/api/staff/profile/${id}/topic`, code, config)
+
+        dispatch(setAlert('Assign trainer to topic successfully', 'success'))
+
+        history.push('/')
+    } catch (err) {
+        const error = err.response.data
+
+        dispatch(setAlert(error.msg, 'danger'))
+    }
+}
+
 export const deleteTopic = (id, topic_id) => async dispatch => {
     try {
         const res = await axios.delete(`/api/staff/profile/${id}/topic/${topic_id}`)

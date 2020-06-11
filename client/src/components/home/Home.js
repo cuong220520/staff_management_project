@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { Link } from 'react-router-dom'
+import { Link, Redirect } from 'react-router-dom'
 
 import Spinner from '../layout/Spinner'
 import Admin from '../staff/Admin'
@@ -9,6 +9,10 @@ import Trainer from '../staff/Trainer'
 import TrainingStaff from '../staff/TrainingStaff'
 
 const Landing = ({ auth: { loading, user } }) => {
+    if (user.position === 'trainee' || user.position === 'trainer') {
+        return <Redirect to={`/profile/${user._id}`} />
+    }
+
     return loading ? (
         <Spinner />
     ) : (

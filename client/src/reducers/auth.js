@@ -23,6 +23,7 @@ export default function(state = initialState, action) {
                 isAuthenticated: true,
                 loading: false,
                 user: {
+                    _id: payload._id,
                     name: payload.name,
                     position: payload.position
                 }

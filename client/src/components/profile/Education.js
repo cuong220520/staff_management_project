@@ -37,7 +37,7 @@ const Education = ({ education, deleteEducation, id }) => {
             </div>
         </div>
     ) : (
-        <div className='card mt-4'>
+        <div className='card mt-4 card-overflow'>
             <div className='card-header'>
                 <i className='far fa-file-alt'></i> Staff Education
             </div>

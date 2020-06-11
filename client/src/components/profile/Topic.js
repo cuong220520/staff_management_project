@@ -11,7 +11,7 @@ const Topic = ({ topics, deleteTopic, id }) => {
             <td>{topic.code}</td>
             <td>{topic.courses && 
                 topic.courses.map(course => (
-                    <>{course.name} - {course.code} <br /></>
+                    <p className='p-0 m-0' key={course._id}>{course.name} - {course.code} <br /></p>
                 ))
             }</td>
 

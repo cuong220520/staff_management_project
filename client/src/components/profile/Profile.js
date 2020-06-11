@@ -25,7 +25,7 @@ const Profile = ({ getStaffById, match, staff: { staff, loading } }) => {
 
             <div className='card-body'>
                 <div className='row'>
-                    <div className='col-md-3'>
+                    <div className='col-lg-3'>
                         <img src={staff.image} alt={`${staff.name} profile`} />
                         <Link
                             to={`/profile/${staff._id}/edit`}
@@ -49,7 +49,7 @@ const Profile = ({ getStaffById, match, staff: { staff, loading } }) => {
                         </Link>
                     </div>
 
-                    <div className='col-md-9'>
+                    <div className='col-lg-9'>
                         <div className='form-group'>
                             <label className='font-weight-bold'>Name</label>
                             <div className='border-bottom pl-2'>

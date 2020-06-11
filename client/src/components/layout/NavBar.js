@@ -29,6 +29,12 @@ const NavBar = ({ auth: { isAuthenticated, loading, user }, logout }) => {
                                 Topic
                             </Link>
                         </li>
+
+                        <li className='nav-item'>
+                            <Link className='nav-link' to='/category'>
+                                Category
+                            </Link>
+                        </li>
                     </Fragment>
                 )}
             </ul>

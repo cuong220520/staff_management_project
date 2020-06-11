@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import { createStaff } from '../../actions/staff'
 import { connect } from 'react-redux'
 
-const CreateStaff = ({ createStaff, history }) => {
+const CreateStaff = ({ createStaff, history, user }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -15,13 +15,21 @@ const CreateStaff = ({ createStaff, history }) => {
         position: 'trainer',
     })
 
-    const { name, email, password, gender, dateOfBirth, ieltsDegree, position } = formData
+    const {
+        name,
+        email,
+        password,
+        gender,
+        dateOfBirth,
+        ieltsDegree,
+        position,
+    } = formData
 
     const onChange = (event) => {
         setFormData({ ...formData, [event.target.name]: event.target.value })
     }
 
-    const onSubmit = event => {
+    const onSubmit = (event) => {
         event.preventDefault()
 
         createStaff(formData, history)
@@ -38,7 +46,11 @@ const CreateStaff = ({ createStaff, history }) => {
                 <div className='col-md-3'></div>
 
                 <div className='col-md-6 col-md-offset-6'>
-                    <form id='login' className='card card-padding' onSubmit={onSubmit}>
+                    <form
+                        id='login'
+                        className='card card-padding'
+                        onSubmit={onSubmit}
+                    >
                         <div className='form-group'>
                             <label>Name</label>
                             <input
@@ -82,7 +94,6 @@ const CreateStaff = ({ createStaff, history }) => {
                                 className='form-control'
                                 onChange={onChange}
                                 value={gender}
-                                
                             >
                                 <option value='Male'>Male</option>
                                 <option value='Female'>Female</option>
@@ -120,8 +131,15 @@ const CreateStaff = ({ createStaff, history }) => {
                                 onChange={onChange}
                                 value={position}
                             >
-                                <option value='trainer'>Trainer</option>
-                                <option value='training-staff'>Training Staff</option>
+                                <option value=''>Choose Position</option>
+                                {user.position === 'admin' && (
+                                    <>
+                                        <option value='training-staff'>
+                                            Training Staff
+                                        </option>
+                                        <option value='trainer'>Trainer</option>
+                                    </>
+                                )}
                                 <option value='trainee'>Trainee</option>
                             </select>
                         </div>
@@ -143,6 +161,11 @@ const CreateStaff = ({ createStaff, history }) => {
 
 CreateStaff.propTypes = {
     createStaff: PropTypes.func.isRequired,
+    position: PropTypes.string.isRequired,
 }
 
-export default connect(null, { createStaff })(CreateStaff)
+const mapStateToProps = (state) => ({
+    user: state.auth.user,
+})
+
+export default connect(mapStateToProps, { createStaff })(CreateStaff)
