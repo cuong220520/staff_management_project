@@ -312,5 +312,26 @@ export const deleteTopic = (id, topic_id) => async dispatch => {
     }
 }
 
+export const searchStaffs = (input) => async dispatch => {
+    const config = {
+        headers: {
+            'ContentType': 'application/json'
+        }
+    }
+
+    try {
+        const res = await axios.post('/api/staff/search', input, config)
+
+        dispatch({
+            type: GET_STAFFS,
+            payload: res.data
+        })
+    } catch (err) {
+        const error = err.response.data
+
+        dispatch(setAlert(error.msg, 'danger'))
+    }
+}
+
 
 

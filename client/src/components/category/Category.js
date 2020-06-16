@@ -1,16 +1,28 @@
-import React, { useEffect, Fragment } from 'react'
+import React, { useEffect, Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { getCategories, deleteCategoryById } from '../../actions/category'
+import { getCategories, deleteCategoryById, searchCategories } from '../../actions/category'
 import Spinner from '../layout/Spinner'
 
 const Category = ({
     getCategories,
     category: { categories, loading },
     deleteCategoryById,
+    searchCategories
 }) => {
+    const [input, setInput] = useState('')
+
+    const onChange = (event) => {
+        setInput(event.target.value)
+    }
+
+    const onSubmit = (event) => {
+        event.preventDefault()
+        searchCategories({ input })
+    }
+
     useEffect(() => {
         getCategories()
     }, [getCategories, loading])
@@ -23,9 +35,31 @@ const Category = ({
         <Spinner />
     ) : (
         <Fragment>
-            <Link className='btn btn-primary mt-4' to='/category/create'>
-                <i className='fas fa-plus'></i> Create Category
-            </Link>
+            <div className='row mt-4'>
+                <div className='col-md-6'>
+                    <Link className='btn btn-primary' to='/category/create'>
+                        <i className='fas fa-plus'></i> Create Category
+                    </Link>
+                </div>
+
+                <div className='col-md-6'>
+                    <form onSubmit={onSubmit}>
+                        <div className='form-group d-flex'>
+                            <input
+                                className='form-control'
+                                type='text'
+                                name='input'
+                                value={input}
+                                onChange={onChange}
+                            />
+
+                            <button type='submit' className='btn btn-info'>
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <div className='card mt-4'>
                 <div className='card-header main-color-bg'>
@@ -102,12 +136,13 @@ const Category = ({
 Category.propTypes = {
     getCategories: PropTypes.func.isRequired,
     deleteCategoryById: PropTypes.func.isRequired,
+    searchCategories: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
     category: state.category
 })
 
-export default connect(mapStateToProps, { getCategories, deleteCategoryById })(
+export default connect(mapStateToProps, { getCategories, deleteCategoryById, searchCategories })(
     Category
 )

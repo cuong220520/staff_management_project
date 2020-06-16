@@ -81,7 +81,6 @@ router.put(
         auth,
         check('name', 'Name is required').not().isEmpty(),
         check('code', 'Code is required').not().isEmpty(),
-        check('courseCode', 'Course code is required').not().isEmpty(),
     ],
     async (req, res) => {
         const errors = validationResult(req)
@@ -92,8 +91,6 @@ router.put(
 
         const { name, code, courseCode, description } = req.body
 
-        console.log(courseCode)
-
         const topicInfo = {}
 
         if (name) topicInfo.name = name.toUpperCase()
@@ -101,35 +98,39 @@ router.put(
         if (description) topicInfo.description = description
 
         try {
-            const course = await Course.findOne({ code: courseCode })
             let topic = await Topic.findById(req.params.id)
 
-            if (!course) {
-                return res.status(404).json({
-                    msg: 'There is no course for this code',
-                })
-            }
+            if (courseCode) {
+                const course = await Course.findOne({ code: courseCode })
+                const already = topic.courses.filter(
+                    (item) => item._id.toString() === course.id
+                )
 
-            const already = topic.courses.filter(
-                (item) => item._id.toString() === course.id
-            )
+                if (already.length !== 0) {
+                    return res.status(400).json({
+                        msg: 'This topic is already in this course',
+                    })
+                } else {
+                    topic = await Topic.findOneAndUpdate(
+                        { _id: req.params.id },
+                        { $set: topicInfo },
+                        { new: true }
+                    )
 
-            if (already.length !== 0) {
-                return res.status(400).json({
-                    msg: 'This topic is already in this course',
-                })
+                    topic.courses.unshift({
+                        _id: course._id,
+                    })
+
+                    await topic.save()
+
+                    res.json(topic)
+                }
             } else {
                 topic = await Topic.findOneAndUpdate(
                     { _id: req.params.id },
                     { $set: topicInfo },
                     { new: true }
                 )
-
-                topic.courses.unshift({
-                    _id: course._id,
-                })
-
-                await topic.save()
 
                 res.json(topic)
             }
@@ -161,6 +162,28 @@ router.delete('/:id', auth, async (req, res) => {
     }
 })
 
-// create course array in topic and topic array in staff [{ type: mongoose.Schema.Types.ObjectId, ref: 'Topic' }] then populate(Topics.topic)
+router.post('/search', auth, async (req, res) => {
+    const { input } = req.body
+
+    try {
+        const topics = await Topic.find({
+            $or: [
+                { name: new RegExp(input, 'i') },
+                { code: new RegExp(input, 'i') },
+            ],
+        })
+            .populate('trainer', ['name'])
+            .populate('courses', ['name', 'code'])
+
+        if (topics.length === 0) {
+            return res.status(404).json({ msg: 'There are no topic' })
+        }
+
+        res.json(topics)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server error')
+    }
+})
 
 module.exports = router

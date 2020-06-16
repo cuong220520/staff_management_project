@@ -26,7 +26,7 @@ const staffSchema = new mongoose.Schema({
         required: true,
     },
     ieltsDegree: {
-        type: Number
+        type: String
     },
     courses: [
         {

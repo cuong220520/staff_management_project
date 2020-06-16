@@ -127,4 +127,21 @@ router.delete('/:id', auth, async (req, res) => {
     }
 })
 
+router.post('/search', auth, async (req, res) => {
+    const { input } = req.body
+
+    try {
+        const categories = await Category.find({ name: new RegExp(input, 'i') })
+
+        if (categories.length === 0) {
+            return res.status(404).json({ msg: 'There are no category' })
+        }
+
+        res.json(categories)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server error')
+    }
+})
+
 module.exports = router

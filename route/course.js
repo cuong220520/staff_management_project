@@ -184,4 +184,24 @@ router.put(
     }
 )
 
+router.post('/search', auth, async (req, res) => {
+    const { input } = req.body
+
+    try {
+        const courses = await Course.find({ $or: [
+            { name: new RegExp(input, 'i') },
+            { code: new RegExp(input, 'i') }
+        ] })
+
+        if (courses.length === 0) {
+            return res.status(404).json({ msg: 'There are no course' })
+        }
+
+        res.json(courses)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server error')
+    }
+})
+
 module.exports = router

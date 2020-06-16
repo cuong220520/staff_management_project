@@ -1,16 +1,32 @@
-import React, { useEffect, Fragment } from 'react'
+import React, { useEffect, Fragment, useState } from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { Link } from 'react-router-dom'
 
-import { getCourses, deleteCourseById } from '../../actions/course'
+import {
+    getCourses,
+    deleteCourseById,
+    searchCourses,
+} from '../../actions/course'
 import Spinner from '../layout/Spinner'
 
 const Course = ({
     getCourses,
     course: { courses, loading },
     deleteCourseById,
+    searchCourses,
 }) => {
+    const [input, setInput] = useState('')
+
+    const onChange = (event) => {
+        setInput(event.target.value)
+    }
+
+    const onSubmit = (event) => {
+        event.preventDefault()
+        searchCourses({ input })
+    }
+
     useEffect(() => {
         getCourses()
     }, [getCourses, loading])
@@ -23,9 +39,31 @@ const Course = ({
         <Spinner />
     ) : (
         <Fragment>
-            <Link className='btn btn-primary mt-4' to='/course/create'>
-                <i className='fas fa-plus'></i> Create Course
-            </Link>
+            <div className='row mt-4'>
+                <div className='col-md-6'>
+                    <Link className='btn btn-primary' to='/course/create'>
+                        <i className='fas fa-plus'></i> Create Course
+                    </Link>
+                </div>
+
+                <div className='col-md-6'>
+                    <form onSubmit={onSubmit}>
+                        <div className='form-group d-flex'>
+                            <input
+                                className='form-control'
+                                type='text'
+                                name='input'
+                                value={input}
+                                onChange={onChange}
+                            />
+
+                            <button type='submit' className='btn btn-info'>
+                                Search
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
 
             <div className='card mt-4'>
                 <div className='card-header main-color-bg'>
@@ -111,12 +149,15 @@ const Course = ({
 Course.propTypes = {
     getCourses: PropTypes.func.isRequired,
     deleteCourseById: PropTypes.func.isRequired,
+    searchCourses: PropTypes.func.isRequired,
 }
 
 const mapStateToProps = (state) => ({
     course: state.course,
 })
 
-export default connect(mapStateToProps, { getCourses, deleteCourseById })(
-    Course
-)
+export default connect(mapStateToProps, {
+    getCourses,
+    deleteCourseById,
+    searchCourses,
+})(Course)

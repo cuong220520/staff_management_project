@@ -122,3 +122,25 @@ export const deleteTopicById = (id) => async dispatch => {
         }
     }
 }
+
+export const searchTopics = (input) => async dispatch => {
+    const config = {
+        headers: {
+            'ContentType': 'application/json'
+        }
+    }
+
+    try {
+        const res = await axios.post('/api/topic/search', input, config)
+
+        dispatch({
+            type: GET_TOPICS,
+            payload: res.data
+        })
+    } catch (err) {
+        const error = err.response.data
+
+        dispatch(setAlert(error.msg, 'danger'))
+    }
+}
+

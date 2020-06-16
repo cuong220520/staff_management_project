@@ -176,13 +176,7 @@ router.put(
             return res.status(400).json({ errors: errors.array() })
         }
 
-        const {
-            name,
-            gender,
-            dateOfBirth,
-            image,
-            ieltsDegree,
-        } = req.body
+        const { name, gender, dateOfBirth, image, ieltsDegree } = req.body
 
         let date = new Date(dateOfBirth)
 
@@ -215,25 +209,25 @@ router.put(
                     { new: true }
                 )
 
-                staff.courses.map(async (item) => {
-                    const course = await Course.findById(item.course)
+                // staff.courses.map(async (item) => {
+                //     const course = await Course.findById(item.course)
 
-                    if (course.staffs.length > 0) {
-                        course.staffs = course.staffs.filter(
-                            (staffInCourse) =>
-                                staffInCourse.staff.toString() !== req.params.id
-                        )
-                    }
+                //     if (course.staffs.length > 0) {
+                //         course.staffs = course.staffs.filter(
+                //             (staffInCourse) =>
+                //                 staffInCourse.staff.toString() !== req.params.id
+                //         )
+                //     }
 
-                    course.staffs.unshift({
-                        staff: staff._id,
-                        name: staffProfile.name,
-                        dateOfBirth: staffProfile.dateOfBirth,
-                        image: staffProfile.image,
-                    })
+                //     course.staffs.unshift({
+                //         staff: staff._id,
+                //         name: staffProfile.name,
+                //         dateOfBirth: staffProfile.dateOfBirth,
+                //         image: staffProfile.image,
+                //     })
 
-                    await course.save()
-                })
+                //     await course.save()
+                // })
 
                 res.json(staff)
             }
@@ -589,5 +583,25 @@ router.put(
         }
     }
 )
+
+router.post('/search', auth, async (req, res) => {
+    const { input } = req.body
+
+    try {
+        const staffs = await Staff.find({ $or: [
+            { name: new RegExp(input, 'i') },
+            { ieltsDegree: new RegExp(input, 'i') }
+        ] })
+
+        if (staffs.length === 0) {
+            return res.status(404).json({ msg: 'There are no staff' })
+        }
+
+        res.json(staffs)
+    } catch (err) {
+        console.error(err.message)
+        res.status(500).send('Server error')
+    }
+})
 
 module.exports = router

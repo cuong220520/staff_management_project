@@ -113,3 +113,25 @@ export const deleteCategoryById = (id) => async (dispatch) => {
         }
     }
 }
+
+export const searchCategories = (input) => async dispatch => {
+    const config = {
+        headers: {
+            'ContentType': 'application/json'
+        }
+    }
+
+    try {
+        const res = await axios.post('/api/category/search', input, config)
+
+        dispatch({
+            type: GET_CATEGORIES,
+            payload: res.data
+        })
+    } catch (err) {
+        const error = err.response.data
+
+        dispatch(setAlert(error.msg, 'danger'))
+    }
+}
+
