@@ -119,9 +119,7 @@ router.get('/:position', auth, async (req, res) => {
         })
 
         if (staffsByPosition.length === 0) {
-            return res
-                .status(404)
-                .json({ msg: 'There is no staff for this position' })
+            return res.json(staffsByPosition)
         }
 
         res.json(staffsByPosition)
@@ -567,13 +565,27 @@ router.put(
         try {
             let staff = await Staff.findById(req.params.id)
 
+            const credentials = {}
+
+            const existedStaff = await Staff.findOne({ email: email })
+
+            if (existedStaff && existedStaff._id.toString() !== req.params.id) {
+                return res
+                    .status(400)
+                    .json({ errors: [{ msg: 'Invalid email' }] })
+            }
+
+            credentials.email = email
+
             const salt = await bcrypt.genSalt(10)
             password = await bcrypt.hash(password, salt)
 
+            credentials.password = password
+
             staff = await Staff.findOneAndUpdate(
                 { _id: staff.id },
-                { email: email },
-                { password: password }
+                { $set: credentials },
+                { new: true }
             )
 
             res.json(staff)
@@ -588,10 +600,12 @@ router.post('/search', auth, async (req, res) => {
     const { input } = req.body
 
     try {
-        const staffs = await Staff.find({ $or: [
-            { name: new RegExp(input, 'i') },
-            { ieltsDegree: new RegExp(input, 'i') }
-        ] })
+        const staffs = await Staff.find({
+            $or: [
+                { name: new RegExp(input, 'i') },
+                { ieltsDegree: new RegExp(input, 'i') },
+            ],
+        })
 
         if (staffs.length === 0) {
             return res.status(404).json({ msg: 'There are no staff' })

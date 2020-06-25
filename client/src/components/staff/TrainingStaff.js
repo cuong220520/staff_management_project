@@ -64,7 +64,6 @@ const TrainingStaff = ({
                                                 >
                                                     <i className='fas fa-plus'></i>
                                                 </Link>
-                                                {'  '}
                                                 <Link
                                                     to={`/profile/${staff._id}/edit`}
                                                     className='pl-2'
@@ -144,7 +143,12 @@ const TrainingStaff = ({
                                                 >
                                                     <i className='fas fa-edit'></i>
                                                 </Link>
-
+                                                <Link
+                                                    to={`/profile/${staff._id}/change-credentials`}
+                                                    className='pl-2'
+                                                >
+                                                    <i className="fas fa-key"></i>
+                                                </Link>
                                                 <label
                                                     onClick={() =>
                                                         deleteStaff(staff._id)

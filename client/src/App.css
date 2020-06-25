@@ -3,8 +3,8 @@ body {
 }
 
 .main-color-bg {
-    background-color: #e74c3c !important;
-    border-color: #c0392b !important;
+    background-color: #e91e63 !important;
+    border-color: #d81b60 !important;
     color: #fff !important;
 }
 
@@ -28,7 +28,7 @@ body {
 }
 
 #remove-item {
-    color: #e74c3c;
+    color: #e91e63;
 }
 
 #remove-item:hover {

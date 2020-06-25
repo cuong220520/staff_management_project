@@ -129,7 +129,8 @@ export const deleteStaffById = (id) => async (dispatch) => {
         try {
             const res = await axios.delete(`/api/staff/profile/${id}`)
 
-            dispatch(getStaffs())
+            dispatch(getStaffsByPosition('trainer'))
+            dispatch(getStaffsByPosition('training-staff'))
     
             dispatch(setAlert(res.data.msg, 'success'))
         } catch (err) {

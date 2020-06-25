@@ -13,7 +13,7 @@ const Profile = ({ getStaffById, match, staff: { staff, loading } }) => {
         getStaffById(match.params.id)
     }, [getStaffById, match])
 
-    return loading ? (
+    return loading || !staff ? (
         <Spinner />
     ) : (
         <div className='card mt-4 mb-4'>

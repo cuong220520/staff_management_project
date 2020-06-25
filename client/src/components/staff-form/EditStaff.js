@@ -113,7 +113,11 @@ const EditStaff = ({
 
                         <div className='form-group'>
                             <label>Position</label>
-                            <p name='position' className='form-control' readOnly={true}>
+                            <p
+                                name='position'
+                                className='form-control'
+                                readOnly={true}
+                            >
                                 {staff.position}
                             </p>
                         </div>

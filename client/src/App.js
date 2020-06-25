@@ -113,7 +113,7 @@ const App = () => {
                             exact
                             path='/profile/:id/change-credentials'
                             component={ChangeCredentials}
-                            permissions={['admin']}
+                            permissions={['admin', 'training-staff']}
                         />
                         <PermissionRoute
                             exact

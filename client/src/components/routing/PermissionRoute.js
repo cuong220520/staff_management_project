@@ -16,9 +16,6 @@ const PermissionRoute = ({
     },
     ...rest
 }) => {
-    console.log(permissions, position)
-    console.log(permissions.includes(position))
-    
     return loading ? (
         <Spinner />
     ) : (

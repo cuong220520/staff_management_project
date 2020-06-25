@@ -1,14 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 
-import { changeCredentials } from '../../actions/staff'
+import { changeCredentials, getStaffById } from '../../actions/staff'
 import { connect } from 'react-redux'
 
-const ChangeCredentials = ({ changeCredentials, history, match }) => {
+const ChangeCredentials = ({ changeCredentials, history, match, staff: { loading, staff }, getStaffById }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     })
+
+    useEffect(() => {
+        getStaffById(match.params.id)
+
+        setFormData({
+            email: loading || !staff.email ? '' : staff.email
+        })
+    // eslint-disable-next-line
+    }, [getStaffById, staff._id])
 
     const onChange = event => {
         setFormData({...formData, [event.target.name]: event.target.value})
@@ -80,4 +89,8 @@ ChangeCredentials.propTypes = {
     changeCredentials: PropTypes.func.isRequired,
 }
 
-export default connect(null, { changeCredentials })(ChangeCredentials)
+const mapStateToProps = state => ({
+    staff: state.staff
+})
+
+export default connect(mapStateToProps, { changeCredentials, getStaffById })(ChangeCredentials)
