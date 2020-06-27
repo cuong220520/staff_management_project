@@ -30,6 +30,7 @@ import AssignTopic from './components/staff-form/AssignTopic'
 import Category from './components/category/Category'
 import CreateCategory from './components/category-form/CreateCategory'
 import EditCategory from './components/category-form/EditCategory'
+import CourseInfo from './components/course/CourseInfo'
 
 if (localStorage.token) {
     setAuthToken(localStorage.token)
@@ -113,7 +114,7 @@ const App = () => {
                             exact
                             path='/profile/:id/change-credentials'
                             component={ChangeCredentials}
-                            permissions={['admin', 'training-staff']}
+                            permissions={['admin', 'training-staff', 'trainer', 'trainee']}
                         />
                         <PermissionRoute
                             exact
@@ -125,6 +126,12 @@ const App = () => {
                             exact
                             path='/course'
                             component={Course}
+                            permissions={['training-staff']}
+                        />
+                        <PermissionRoute
+                            exact
+                            path='/course/:id'
+                            component={CourseInfo}
                             permissions={['training-staff']}
                         />
                         <PermissionRoute

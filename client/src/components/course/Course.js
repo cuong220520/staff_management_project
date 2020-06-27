@@ -93,7 +93,13 @@ const Course = ({
                                     {courses.length > 0 ? (
                                         courses.map((course) => (
                                             <tr key={course._id}>
-                                                <td>{course.name}</td>
+                                                <td>
+                                                    <Link
+                                                        to={`/course/${course._id}`}
+                                                    >
+                                                        {course.name}
+                                                    </Link>
+                                                </td>
                                                 <td>{course.code}</td>
                                                 <td>
                                                     {course.category && (

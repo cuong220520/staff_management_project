@@ -58,7 +58,9 @@ router.post(
 
 router.get('/:id', auth, async (req, res) => {
     try {
-        const course = await Course.findById(req.params.id).populate('category', ['name'])
+        const course = await Course.findById(req.params.id)
+            .populate('category', ['name'])
+            .populate('staffs', ['name', 'email', 'gender', 'dateOfBirth'])
 
         if (course) {
             res.json(course)
@@ -175,7 +177,9 @@ router.put(
             res.json(course)
         } catch (err) {
             if (err.kind === 'ObjectId') {
-                return res.status(404).json({ msg: 'There is no course/category here' })
+                return res
+                    .status(404)
+                    .json({ msg: 'There is no course/category here' })
             } else {
                 console.error(err.message)
                 res.status(500).json({ msg: 'Server error' })
@@ -188,10 +192,12 @@ router.post('/search', auth, async (req, res) => {
     const { input } = req.body
 
     try {
-        const courses = await Course.find({ $or: [
-            { name: new RegExp(input, 'i') },
-            { code: new RegExp(input, 'i') }
-        ] })
+        const courses = await Course.find({
+            $or: [
+                { name: new RegExp(input, 'i') },
+                { code: new RegExp(input, 'i') },
+            ],
+        })
 
         if (courses.length === 0) {
             return res.status(404).json({ msg: 'There are no course' })

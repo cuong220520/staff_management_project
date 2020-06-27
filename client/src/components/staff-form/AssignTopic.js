@@ -40,7 +40,7 @@ const AssignTopic = ({
         <div className='container mt-4'>
             <h1 className='text-center mb-4'>
                 <i className='fas fa-edit'></i>
-                {'  '}Assign trainee to a course
+                {'  '}Assign trainer to a topic
             </h1>
 
             <div className='row'>

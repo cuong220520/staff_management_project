@@ -47,6 +47,10 @@ const Profile = ({ getStaffById, match, staff: { staff, loading } }) => {
                         >
                             Update Experience
                         </Link>
+
+                        <Link to={`/profile/${staff._id}/change-credentials`} className='btn btn-warning btn-equal mt-2'>
+                            Update Credentials
+                        </Link>
                     </div>
 
                     <div className='col-lg-9'>

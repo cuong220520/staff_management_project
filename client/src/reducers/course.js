@@ -31,7 +31,7 @@ export default function (state = initialState, action) {
                 course: payload,
                 loading: false,
                 error: {}
-            }
+            } 
 
         case GET_COURSES_ERROR: {
             return {
